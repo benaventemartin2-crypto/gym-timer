@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" id="tc" content="#08080e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Training</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{
+  --bg:#08080e;--s1:#0f0f18;--s2:#14141e;--s3:#18182a;
+  --b1:#18181f;--b2:#1c1c28;--rt:#1a1a26;
+  --t0:#ffffff;--t1:#9ca3af;--t2:#6b7280;--t3:#4b5563;--t4:#374151;
+}
+html.light{
+  --bg:#f2f2f7;--s1:#ffffff;--s2:#e8e8ed;--s3:#f0f0f5;
+  --b1:#e5e5ea;--b2:#d1d1d6;--rt:#e5e5ea;
+  --t0:#1c1c1e;--t1:#6e6e73;--t2:#8e8e93;--t3:#aeaeb2;--t4:#c7c7cc;
+}
+*{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+body{overscroll-behavior:none;user-select:none;background:var(--bg);color:var(--t0);}
+.fade{animation:fadeIn .18s ease both;}
+.s-up{animation:slideUp .3s cubic-bezier(.32,.72,0,1) both;}
+.cd-pop{animation:cdPop .3s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cdPop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+input[type=number]{-moz-appearance:textfield;}
+.tab-active{color:var(--t0);border-bottom:2px solid var(--t0);}
+.tab-inactive{color:var(--t3);border-bottom:2px solid transparent;}
+</style>
+</head>
+<body class="min-h-screen">
+<div id="app"></div>
+<script>
+// ─── SESSIONS ──────────────────────────────────────────────────────────────────
+const SESSIONS_SEED = [
+ {
+  id:'lower-power', category:'gym', emoji:'🦵', accent:'emerald',
+  name:'Lower Body + Power',
+  goal:'Fuerza de pierna, potencia explosiva, estabilidad lateral',
+  duration:'~55 min', load:'alta', optional:false,
+  frequency:'2x/semana · 48h entre sesiones',
+  tags:['fuerza','potencia','pierna'],
+  blocks:[
+   { name:'Calentamiento', icon:'🔥', duration:8, exercises:[
+    { name:"World's Greatest Stretch", instruction:'Estocada profunda, mano al suelo, abre el brazo al techo.',
+      tips:['Cadera baja, rodilla delantera sobre tobillo','Rota lento, no rebotes'],
+      duration:45, side:true, image:'worlds-greatest-stretch' },
+    { name:'Hip 90/90', instruction:'Sentado. Piernas en 90/90. Inclina el tronco y transiciona.',
+      tips:['Espalda recta al inclinar','Trabaja dentro del rango sin dolor'],
+      duration:80, image:'hip-9090' },
+    { name:'Dorsiflexión tobillo en pared', instruction:'Rodilla sobre dedos del pie. Talón pegado al suelo.',
+      tips:['Si el talón se levanta, acerca más el pie','Mantén 2s en el punto de tensión'],
+      duration:35, side:true, image:'ankle-dorsiflexion' },
+    { name:'Balanceo pierna lateral', instruction:'Mano en pared. Balancea la pierna de adentro hacia afuera.',
+      tips:['Mantén el tronco estable','Amplitud progresiva, no forzada'],
+      duration:30, side:true, image:'leg-swing-lateral' },
+    { name:'Rodillas altas', instruction:'Trota en el lugar llevando rodillas a cadera. 45 segundos.',
+      tips:['Brazos activos','Aterrizaje suave, antepié'],
+      duration:45, image:'high-knees' },
+   ]},
+   { name:'Fuerza', icon:'💪', duration:28, exercises:[
+    { name:'Back Squat / Goblet Squat', instruction:'Pecho erguido. Squat profundo. Pausa 1s abajo.',
+      tips:['Bracing antes de bajar: inhala y aprieta el core','Rodillas sobre puntas de los pies','Empuja el suelo, no sólo levanta el peso'],
+      duration:40, sets:4, reps:'5', rest:90, tracked:true, image:'back-squat' },
+    { name:'Romanian Deadlift', instruction:'Bisagra de cadera. Espalda neutra. Baja hasta sentir isquios.',
+      tips:['La barra/mancuernas rozan el muslo todo el recorrido','No flexiones la rodilla — es bisagra pura','Contrae glúteo al subir'],
+      duration:45, sets:3, reps:'8', rest:75, tracked:true, image:'romanian-deadlift' },
+    { name:'Bulgarian Split Squat', instruction:'Pie trasero en banco. Baja controlado. Empuja con el talón.',
+      tips:['Torso ligeramente inclinado hacia adelante','Rodilla trasera no toca el suelo bruscamente','Peso en el talón delantero'],
+      duration:40, sets:3, reps:'8', rest:60, tracked:true, side:true, image:'bulgarian-split-squat' },
+   ]},
+   { name:'Potencia', icon:'⚡', duration:12, exercises:[
+    { name:'Box Jump', instruction:'Squat leve → explosión → aterriza suave absorbiendo con caderas y rodillas.',
+      tips:['Aterriza con cadera atrás, no rodillas en valgo','Baja caminando del cajón, no saltando','Descansa completo entre reps: calidad > cantidad'],
+      duration:30, sets:4, reps:'4', rest:90, image:'box-jump' },
+    { name:'Lateral Bound', instruction:'Salta de un pie al otro lateralmente. Absorbe el aterrizaje.',
+      tips:['Aterriza en un pie con control antes de saltar','Carga la cadera al aterrizar','Simula el movimiento lateral del tenis'],
+      duration:35, sets:3, reps:'5', rest:75, side:true, image:'lateral-bound' },
+   ]},
+   { name:'Core', icon:'🔄', duration:8, exercises:[
+    { name:'Pallof Press', instruction:'Banda al costado. Extiende brazos y RESISTE la rotación.',
+      tips:['Los pies no se mueven — el núcleo absorbe la fuerza','Exhala al extender','Activa el glúteo del lado del anclaje'],
+      duration:30, sets:3, reps:'10', rest:45, side:true, image:'pallof-press' },
+    { name:'Dead Bug', instruction:'Espalda pegada al suelo. Baja brazo y pierna opuestos lento.',
+      tips:['Lumbar siempre en contacto con el suelo','Exhala al bajar la extremidad','Velocidad lenta = más activación'],
+      duration:35, sets:3, reps:'8', rest:30, side:true, image:'dead-bug' },
+   ]},
+   { name:'Cool Down', icon:'🌊', duration:7, exercises:[
+    { name:'Estiramiento Figura 4', instruction:'Tobillo sobre rodilla opuesta. Jala suavemente hacia ti.',
+      tips:['Respira profundo en la posición','No fuerces la flexión'],
+      duration:55, side:true, image:'figure-4' },
+    { name:'Flexor de cadera en estocada', instruction:'Rodilla trasera en suelo. Cadera hacia adelante. Aprieta glúteo.',
+      tips:['Pelvis neutra: no arquees la lumbar','El estiramiento debe sentirse al frente de la cadera trasera'],
+      duration:55, side:true, image:'hip-flexor-lunge' },
+    { name:'Extensión torácica en rodillo', instruction:'Espalda media en el rodillo. Abre los brazos. Respira.',
+      tips:['Solo la zona media (T4–T10), no la lumbar','Pausa 2s en cada tensión'],
+      duration:60, image:'thoracic-extension' },
+   ]},
+  ]
+ },
+ {
+  id:'upper-rc', category:'gym', emoji:'🦾', accent:'sky',
+  name:'Upper Body + Manguito',
+  goal:'Fuerza de tren superior, salud del hombro, prevención',
+  duration:'~50 min', load:'alta', optional:false,
+  frequency:'2x/semana · no el día antes de tenis',
+  tags:['fuerza','manguito','hombro'],
+  blocks:[
+   { name:'Calentamiento', icon:'🔥', duration:7, exercises:[
+    { name:'Band Pull-Apart', instruction:'Elástico al frente. Abre separando, retrayendo escápulas.',
+      tips:['Brazos rectos todo el recorrido','Codos no se doblan'],
+      duration:40, reps:'15', image:'band-pull-apart' },
+    { name:'Círculos de brazos completos', instruction:'5 adelante, 5 atrás. Amplitud máxima.',
+      tips:['Aumenta la amplitud gradualmente','Hombros relajados, no elevados'],
+      duration:40, image:'arm-circles' },
+    { name:'CARs de hombro', instruction:'Círculo articular completo del hombro. Lento y controlado.',
+      tips:['Máxima amplitud sin compensar con el tronco','4 reps cada dirección'],
+      duration:35, side:true, image:'shoulder-cars' },
+    { name:'Rotación torácica de pie', instruction:'Pies al ancho de hombros. Gira el tronco. Cadera quieta.',
+      tips:['La cadera no rota — sólo el tronco','Manos en el pecho o cabeza'],
+      duration:45, image:'thoracic-rotation-standing' },
+   ]},
+   { name:'Manguito Rotador', icon:'🎯', duration:10, exercises:[
+    { name:'Rotación externa — banda', instruction:'Codo 90° pegado al cuerpo. Rota el antebrazo hacia afuera.',
+      tips:['Codo fijo: no se separa del costado','Movimiento lento y controlado, especialmente al regresar','Alta rep, bajo peso — no es fuerza, es control'],
+      duration:30, sets:3, reps:'15', rest:30, tracked:true, side:true, image:'external-rotation-band' },
+    { name:'Face Pull', instruction:'Cable/banda a altura de cara. Codos altos. Retrae escápulas al llegar.',
+      tips:['Codos siempre por encima de los hombros','El movimiento termina con escápulas juntas y hacia abajo','No arquees la lumbar'],
+      duration:35, sets:3, reps:'15', rest:30, tracked:true, image:'face-pull' },
+    { name:'Y-T-W en banco inclinado', instruction:'Boca abajo 30°. Posición Y, T y W. Muy liviano.',
+      tips:['3–5 lbs máximo. El objetivo es control neuromotor','Pausa 1s en cada posición','Escápulas retraídas todo el tiempo'],
+      duration:40, sets:3, reps:'8 de cada', rest:30, tracked:true, image:'y-t-w' },
+   ]},
+   { name:'Fuerza Superior', icon:'💪', duration:20, exercises:[
+    { name:'Lat Pulldown (máquina)', instruction:'Agarre ancho. Jala al pecho. Escápulas abajo y atrás.',
+      tips:['Inicia el movimiento retrayendo escápulas, no con el brazo','No te balancees hacia atrás','Controla la subida: 3 segundos'],
+      duration:40, sets:4, reps:'8', rest:75, tracked:true, image:'lat-pulldown' },
+    { name:'Remo en máquina / cable', instruction:'Espalda recta. Tira con codos pegados. Retrae escápulas al final.',
+      tips:['No redondees la espalda al final de la repetición','Escápulas se juntan en el punto de máxima contracción','Agarre neutro = más remo, menos bíceps'],
+      duration:40, sets:3, reps:'10', rest:60, tracked:true, image:'cable-row' },
+    { name:'Single-arm DB Row', instruction:'Rodilla en banco. Tira el codo hacia el techo. Espalda plana.',
+      tips:['No rotes el tronco para ayudar','El codo pasa al nivel del torso en el punto alto','Peso suficiente para sentirlo en el dorsal'],
+      duration:35, sets:3, reps:'10', rest:45, tracked:true, side:true, image:'db-row' },
+    { name:'Landmine Press', instruction:'Press controlado desde el hombro. Codo a 45°. No arquees la lumbar.',
+      tips:['Bracing del core durante todo el movimiento','El movimiento es diagonal, no vertical','Ideal para hombro: rango natural de la articulación'],
+      duration:40, sets:3, reps:'8', rest:60, tracked:true, image:'landmine-press' },
+   ]},
+   { name:'Core', icon:'🔄', duration:6, exercises:[
+    { name:'Plancha con toque de hombros', instruction:'Plancha en manos. Alterna tocar cada hombro. Caderas estables.',
+      tips:['Pies más separados = más estabilidad','Las caderas NO rotan — ese es el punto','Exhala al tocar'],
+      duration:35, sets:3, reps:'10', rest:30, image:'plank-shoulder-tap' },
+    { name:'Bird Dog', instruction:'Cuadrupedia. Extiende brazo y pierna opuestos. Mantén 2s. Controla el regreso.',
+      tips:['La cadera no sube al extender la pierna','Cuello neutro: mira el suelo','Activa glúteo al extender la pierna'],
+      duration:35, sets:3, reps:'8', rest:30, side:true, image:'bird-dog' },
+   ]},
+   { name:'Cool Down', icon:'🌊', duration:6, exercises:[
+    { name:'Estiramiento dorsal cruzado', instruction:'Brazo cruzando el pecho. El otro codo lo jala suavemente.',
+      tips:['No eleves el hombro del brazo estirado','30–45 segundos cada lado'],
+      duration:45, side:true, image:'cross-body-shoulder' },
+    { name:'Estiramiento pectoral en marco', instruction:'Antebrazo en el marco. Gira el cuerpo alejándote.',
+      tips:['El codo a altura del hombro o ligeramente por encima','Siente el estiramiento en el pecho, no el hombro'],
+      duration:45, side:true, image:'doorway-chest' },
+    { name:'Movilidad de cuello', instruction:'Inclina adelante/atrás, lateral, rota. 3 reps cada dirección.',
+      tips:['Movimientos lentos y controlados','Sin crujir a propósito'],
+      duration:60, image:'neck-mobility' },
+   ]},
+  ]
+ },
+ {
+  id:'full-body', category:'gym', emoji:'🏋️', accent:'violet',
+  name:'Full Body Atlético',
+  goal:'Sesión opcional de integración y potencia rotacional',
+  duration:'~45 min', load:'media', optional:true,
+  frequency:'1x/semana opcional · sólo si hay energía',
+  tags:['fuerza','potencia','rotación'],
+  blocks:[
+   { name:'Calentamiento', icon:'🔥', duration:6, exercises:[
+    { name:'Hip 90/90', instruction:'Sentado. Piernas 90/90. Inclina y transiciona lento.',
+      tips:['No empujes con las manos','Trabaja el rango activo'],
+      duration:70, image:'hip-9090' },
+    { name:"World's Greatest Stretch", instruction:'Estocada profunda. Mano al suelo. Abre el brazo al techo.',
+      tips:['3 reps lentas por lado'],
+      duration:45, side:true, image:'worlds-greatest-stretch' },
+    { name:'Hip Hinge dinámico', instruction:'Bisagra de cadera con espalda plana. 10 reps.',
+      tips:['Mantén la espalda neutra durante todo el recorrido','Las caderas van atrás, no abajo'],
+      duration:40, reps:'10', image:'hip-hinge' },
+   ]},
+   { name:'Fuerza', icon:'💪', duration:20, exercises:[
+    { name:'Trap Bar Deadlift / Deadlift', instruction:'Espalda neutra. Empuja el suelo. Cadera y hombros suben juntos.',
+      tips:['Aprieta el suelo con los pies antes de subir','Escápulas atrás y abajo al inicio','La barra roza el cuerpo en todo momento'],
+      duration:40, sets:3, reps:'5', rest:90, tracked:true, image:'trap-bar-deadlift' },
+    { name:'Hip Thrust con pausa', instruction:'Hombros en banco. Empuja caderas al techo. Aprieta glúteo 2s arriba.',
+      tips:['Mentón tuckeado, no mires al techo','La pelvis no rota lateralmente','Empuja desde el talón'],
+      duration:40, sets:3, reps:'12', rest:60, tracked:true, image:'hip-thrust' },
+    { name:'Single-arm DB Row', instruction:'Rodilla en banco. Tira el codo hacia el techo. Espalda plana.',
+      tips:['No rotes el tronco para ayudar','El codo pasa al nivel del torso'],
+      duration:35, sets:3, reps:'10', rest:45, tracked:true, side:true, image:'db-row' },
+   ]},
+   { name:'Potencia Rotacional', icon:'🎾', duration:12, exercises:[
+    { name:'Cable Rotation (forehand drive)', instruction:'Banda anclada. Rota desde la cadera. Los brazos siguen.',
+      tips:['La potencia sale de las piernas y cadera','Los brazos son el látigo, no el motor','Imita el patrón del forehand'],
+      duration:30, sets:3, reps:'8', rest:45, side:true, image:'cable-rotation' },
+    { name:'Med Ball Slam', instruction:'Levanta sobre la cabeza. Baja con fuerza máxima. Recoge y repite.',
+      tips:['Exhala al golpear','Activa el core antes del golpe','Velocidad máxima: es potencia, no resistencia'],
+      duration:30, sets:3, reps:'6', rest:60, image:'med-ball-slam' },
+    { name:'Broad Jump', instruction:'Squat leve → salta al frente con máximo alcance. Aterriza suave.',
+      tips:['Aterriza con cadera atrás y rodillas amortiguando','Pausa de 2s antes del siguiente salto','Mide la distancia para progresión'],
+      duration:30, sets:3, reps:'4', rest:75, image:'broad-jump' },
+   ]},
+   { name:'Core', icon:'🔄', duration:7, exercises:[
+    { name:'Pallof Press', instruction:'Banda al costado. Extiende brazos. RESISTE la rotación.',
+      tips:['Pies quietos durante todo el movimiento','Exhala al extender'],
+      duration:30, sets:3, reps:'10', rest:45, side:true, image:'pallof-press' },
+    { name:'Plancha lateral con rotación', instruction:'Plancha lateral. Baja el brazo bajo el cuerpo. Rota y extiende al techo.',
+      tips:['No dejes caer la cadera al rotar','Respira durante el movimiento'],
+      duration:35, sets:3, reps:'8', rest:30, side:true, image:'side-plank-rotation' },
+   ]},
+  ]
+ },
+ {
+  id:'tennis-prep', category:'tennis', emoji:'🎾', accent:'yellow',
+  name:'Activación Pre-Tenis',
+  goal:'Preparar hombro, cadera y patrones específicos de tenis',
+  duration:'~18 min', load:'baja', optional:false,
+  frequency:'Antes de cada sesión de tenis',
+  tags:['tenis','manguito','activación'],
+  blocks:[
+   { name:'Manguito Rotador', icon:'🎯', duration:7, exercises:[
+    { name:'Círculos de brazos completos', instruction:'5 adelante, 5 atrás. Amplitud máxima. Suave.',
+      tips:['Aumenta amplitud gradualmente','No fuerces al inicio'],
+      duration:40, image:'arm-circles' },
+    { name:'Rotación externa — banda', instruction:'Codo 90° pegado al cuerpo. Rota antebrazo hacia afuera.',
+      tips:['Codo fijo en el costado','12 reps controladas'],
+      duration:30, reps:'12', side:true, image:'external-rotation-band' },
+    { name:'Face Pull', instruction:'Banda a altura de cara. Codos altos. Retrae escápulas.',
+      tips:['Codos siempre sobre los hombros','Termina con escápulas retraídas'],
+      duration:35, reps:'12', image:'face-pull' },
+    { name:'Prone Y raise', instruction:'Tumbado boca abajo. Eleva brazos en Y. Peso muy liviano o sin peso.',
+      tips:['10 reps lentas','Pausa 1s arriba','Activa parte alta de la espalda'],
+      duration:35, reps:'10', image:'prone-y' },
+   ]},
+   { name:'Activación Tenis', icon:'🎾', duration:8, exercises:[
+    { name:'Salto de comba (simulado)', instruction:'Salta en el lugar con ritmo de comba. Ligereza en los pies.',
+      tips:['Antepié — no talones','Mantén el ritmo constante'],
+      duration:90, image:'jump-rope' },
+    { name:'Círculos de tobillo', instruction:'Pie libre. Rota el tobillo en todas las direcciones.',
+      tips:['Amplitud máxima','6 reps cada sentido por lado'],
+      duration:25, side:true, image:'ankle-circles' },
+    { name:'Balanceo pierna frente/atrás', instruction:'Mano en pared. Oscila progresivamente.',
+      tips:['Aumenta el rango gradualmente','Tronco estable'],
+      duration:30, side:true, image:'leg-swing-front' },
+    { name:'Shuffles laterales posición tenis', instruction:'Posición baja de tenis. Shuffle de lado a lado.',
+      tips:['Rodillas ligeramente flexionadas','Peso en antepié','Pies no se juntan'],
+      duration:50, image:'lateral-shuffle' },
+    { name:'Split Step + reacción', instruction:'Pequeño salto de split al aterrizar en posición baja. Reacciona.',
+      tips:['El split step es justo antes del golpe del rival','Aterrizaje suave y reactivo'],
+      duration:45, image:'split-step' },
+   ]},
+   { name:'Sombras', icon:'🏸', duration:3, exercises:[
+    { name:'Sombra forehand', instruction:'Giro de cadera, swing completo, follow-through.',
+      tips:['Unidad de rotación: cadera y hombros juntos','Follow-through completo'],
+      duration:40, image:'shadow-forehand' },
+    { name:'Sombra revés', instruction:'Rotación de hombros, impacto, follow-through.',
+      tips:['Cadera lidera el movimiento','Sigue con la mirada el punto de impacto imaginario'],
+      duration:40, image:'shadow-backhand' },
+    { name:'Volea + overhead', instruction:'Voleas cortas y un overhead. Pies activos todo el tiempo.',
+      tips:['Pies nunca quietos','Muñeca firme en la volea'],
+      duration:35, image:'shadow-volley' },
+   ]},
+  ]
+ },
+ {
+  id:'mobility-full', category:'mobility', emoji:'🧘', accent:'purple',
+  name:'Movilidad Completa',
+  goal:'Movilidad profunda para tenis y golf. Columna, cadera, hombro.',
+  duration:'~38 min', load:'baja', optional:false,
+  frequency:'2–3x/semana · ideal post-partido o día de descanso',
+  tags:['movilidad','recovery','tenis','golf'],
+  blocks:[
+   { name:'Foam Rolling', icon:'🪵', duration:10, exercises:[
+    { name:'Rodillo — columna torácica', instruction:'Espalda media en el rodillo. Rueda lento T4 a T12.',
+      tips:['Pausa 2s en puntos de tensión','Sólo zona media — no la lumbar','Brazos cruzados o detrás de la cabeza'],
+      duration:90, image:'foam-thoracic' },
+    { name:'Rodillo — gemelos y sóleos', instruction:'Pantorrilla en rodillo. Rueda de talón a rodilla. Gira el pie.',
+      tips:['Prueba cruzando una pierna encima de la otra para más presión','Gira hacia adentro y afuera para cubrir todo el tejido'],
+      duration:50, side:true, image:'foam-calves' },
+    { name:'Rodillo — isquiotibiales', instruction:'Rodillo bajo los isquios. Rueda lento hasta la rodilla.',
+      tips:['Deja que el peso corporal haga el trabajo','Pausa en zonas tensas'],
+      duration:50, side:true, image:'foam-hamstrings' },
+    { name:'Rodillo — banda IT / muslo lateral', instruction:'De lado. Rodillo de cadera a rodilla por el lateral.',
+      tips:['Es incómodo — es normal','No ruedes sobre la articulación'],
+      duration:50, side:true, image:'foam-it-band' },
+    { name:'Rodillo — glúteo/piriforme', instruction:'Sentado en rodillo. Cruza tobillo sobre rodilla. Inclínate.',
+      tips:['El lado donde está el tobillo cruzado es el que trabajas','Gira ligeramente para buscar tensión'],
+      duration:50, side:true, image:'foam-glute' },
+   ]},
+   { name:'Movilidad Articular', icon:'⚡', duration:16, exercises:[
+    { name:'Tobillo: dorsiflexión progresiva', instruction:'Rodilla sobre dedos del pie. Talón en suelo. 10 reps.',
+      tips:['Si el talón se levanta, acerca el pie','Mantén 2s en el punto de tensión'],
+      duration:40, side:true, image:'ankle-dorsiflexion' },
+    { name:'Hip 90/90 con transición', instruction:'Sentado. Piernas en 90/90. Inclina y transiciona lento.',
+      tips:['Espalda recta al inclinar','La transición muestra asimetría — trabájala'],
+      duration:90, image:'hip-9090' },
+    { name:'Pigeon activo', instruction:'Pierna delantera a 90°. Inclínate hacia adelante. Respira.',
+      tips:['Si hay dolor en la rodilla, usa figura 4 acostado','Cada exhala permite más profundidad'],
+      duration:70, side:true, image:'pigeon' },
+    { name:'Rotación torácica en cuadrupedia', instruction:'Mano detrás de la cabeza. Abre el codo al techo.',
+      tips:['La cadera no rota — sólo el torso','Exhala al abrir'],
+      duration:55, side:true, image:'thoracic-rotation-quad' },
+    { name:'Thread the Needle', instruction:'Cuadrupedia. Desliza un brazo por el suelo. Hombro toca el suelo.',
+      tips:['La cadera permanece arriba','Lleva el brazo lo más lejos posible'],
+      duration:50, side:true, image:'thread-needle' },
+    { name:"World's Greatest Stretch", instruction:'Estocada profunda. Mano al suelo. Abre el brazo al techo.',
+      tips:['3–4 reps lentas por lado','Respira y profundiza con cada rep'],
+      duration:55, side:true, image:'worlds-greatest-stretch' },
+    { name:'Hombro: rotación 90/90 en suelo', instruction:'Tumbado. Brazo en L. Cae al frente 10x, luego atrás 10x.',
+      tips:['No fuerce — deja que la gravedad haga el trabajo','Ideal para movilidad interna y externa del hombro'],
+      duration:60, side:true, image:'shoulder-9090' },
+   ]},
+   { name:'Elongación', icon:'🧘', duration:12, exercises:[
+    { name:'Isquiotibiales en pared', instruction:'Acostado. Piernas en la pared. Rodillas rectas. Gravedad estira.',
+      tips:['Glúteo pegado a la pared','Relaja los pies — no es fuerza','2–3 minutos si tienes tiempo'],
+      duration:90, image:'wall-hamstring' },
+    { name:'Flexor de cadera en estocada', instruction:'Rodilla trasera en suelo. Cadera adelante. Aprieta glúteo.',
+      tips:['La pelvis no rota: pelvis neutra','El estiramiento va al frente de la cadera trasera'],
+      duration:65, side:true, image:'hip-flexor-lunge' },
+    { name:'Glúteo — Figura 4', instruction:'Tobillo sobre rodilla opuesta. Jala suave hacia ti. Respira.',
+      tips:['Cada exhala = más profundidad','Si no llegas, hazlo acostado'],
+      duration:65, side:true, image:'figure-4' },
+    { name:'Torsión espinal supina', instruction:'Rodillas al pecho y al lado. Hombro contrario pegado al suelo.',
+      tips:['No fuerces la rodilla al suelo con la mano','Mira hacia el techo o hacia el lado contrario'],
+      duration:60, side:true, image:'spinal-twist' },
+    { name:"Child's Pose + respiración", instruction:'Rodillas al suelo, siéntate sobre talones. Brazos al frente. Respira.',
+      tips:['Deja que la columna se alargue con cada exhala','Puedes abrir las rodillas para bajar más'],
+      duration:75, image:'childs-pose' },
+   ]},
+  ]
+ },
+ {
+  id:'recovery', category:'mobility', emoji:'💆', accent:'teal',
+  name:'Recovery Express',
+  goal:'Desinflamar, soltar tensión post-partido o post-gym',
+  duration:'~15 min', load:'baja', optional:false,
+  frequency:'Post-partido o cualquier noche',
+  tags:['recovery','movilidad'],
+  blocks:[
+   { name:'Foam Roll Express', icon:'🪵', duration:5, exercises:[
+    { name:'Rodillo — columna torácica', instruction:'Espalda media en el rodillo. Rueda T4 a T12.',
+      tips:['Pausa en tensiones','No ruedes la lumbar'],
+      duration:75, image:'foam-thoracic' },
+    { name:'Rodillo — cuádriceps', instruction:'Boca abajo. Rodillo bajo el muslo. Rueda de cadera a rodilla.',
+      tips:['Rota la pierna hacia adentro y afuera para cubrir todo','Pausa en zonas de tensión'],
+      duration:45, side:true, image:'foam-quads' },
+    { name:'Rodillo — glúteo/piriforme', instruction:'Sentado en rodillo. Cruza tobillo sobre rodilla.',
+      tips:['Inclínate hacia el lado del tobillo cruzado'],
+      duration:45, side:true, image:'foam-glute' },
+   ]},
+   { name:'Estiramientos', icon:'🧘', duration:10, exercises:[
+    { name:'Figura 4 acostado', instruction:'Tobillo sobre rodilla. Jala suave. Respira.',
+      tips:['Más profundo cada exhala'],
+      duration:50, side:true, image:'figure-4' },
+    { name:'Flexor de cadera en estocada', instruction:'Rodilla trasera en suelo. Cadera adelante.',
+      tips:['Aprieta el glúteo trasero para mayor efecto'],
+      duration:50, side:true, image:'hip-flexor-lunge' },
+    { name:'Isquiotibiales en pared', instruction:'Piernas en la pared. Gravedad estira. Respira.',
+      tips:['Glúteo pegado a la pared','Relaja los pies'],
+      duration:75, image:'wall-hamstring' },
+    { name:"Child's Pose", instruction:'Siéntate sobre talones. Brazos al frente. Respira profundo.',
+      tips:['Relaja el cuello completamente'],
+      duration:60, image:'childs-pose' },
+    { name:'Torsión espinal supina', instruction:'Rodillas al lado. Hombro contrario en el suelo.',
+      tips:['No fuerces la rotación'],
+      duration:45, side:true, image:'spinal-twist' },
+   ]},
+  ]
+ },
+ {
+  id:'morning', category:'mobility', emoji:'🌅', accent:'amber',
+  name:'Movilidad Mañanera',
+  goal:'Activar la columna, cadera y hombros antes de empezar el día',
+  duration:'~12 min', load:'baja', optional:false,
+  frequency:'Cualquier mañana — ideal antes del tenis',
+  tags:['movilidad','mañana'],
+  blocks:[
+   { name:'Activación', icon:'☀️', duration:12, exercises:[
+    { name:'Cat-Cow', instruction:'Cuadrupedia. Arquea y redondea la espalda. Lento y con respiración.',
+      tips:['Inhala al arquear (cow), exhala al redondear (cat)','10 reps lentas'],
+      duration:60, image:'cat-cow' },
+    { name:'Hip 90/90', instruction:'Sentado. Piernas en 90/90. Inclina y transiciona.',
+      tips:['3–4 reps por lado','Trabaja el rango activo sin ayuda de manos'],
+      duration:60, image:'hip-9090' },
+    { name:"World's Greatest Stretch", instruction:'Estocada profunda. Mano al suelo. Abre brazo al techo.',
+      tips:['3 reps lentas por lado','Respira en cada posición'],
+      duration:40, side:true, image:'worlds-greatest-stretch' },
+    { name:'Rotación torácica en cuadrupedia', instruction:'Mano detrás de la cabeza. Abre el codo al techo.',
+      tips:['4 reps por lado','No rotar la cadera'],
+      duration:35, side:true, image:'thoracic-rotation-quad' },
+    { name:'Círculos de tobillo', instruction:'Pie libre. Rota en todas las direcciones.',
+      tips:['6 reps cada sentido'],
+      duration:20, side:true, image:'ankle-circles' },
+    { name:'CARs de hombro', instruction:'Círculo articular completo del hombro. Lento.',
+      tips:['Máxima amplitud','4 reps cada dirección'],
+      duration:25, side:true, image:'shoulder-cars' },
+    { name:'Squat to Stand', instruction:'Desde tocando los pies, baja a squat profundo, levanta. Repite.',
+      tips:['8 reps lentas','Talones en suelo en el squat'],
+      duration:40, reps:'8', image:'squat-to-stand' },
+   ]},
+  ]
+ },
+]
+
+// ─── CONSTANTS ─────────────────────────────────────────────────────────────────
+const ACCENT = {
+ emerald:{ btn:'bg-emerald-600', bar:'bg-emerald-500', badge:'text-emerald-400 border-emerald-700', text:'text-emerald-400', ring:'#10b981', bg:'bg-emerald-950/40', border:'border-emerald-900' },
+ sky:    { btn:'bg-sky-600',     bar:'bg-sky-500',     badge:'text-sky-400 border-sky-700',         text:'text-sky-400',     ring:'#0ea5e9', bg:'bg-sky-950/40',     border:'border-sky-900' },
+ violet: { btn:'bg-violet-600',  bar:'bg-violet-500',  badge:'text-violet-400 border-violet-700',   text:'text-violet-400',  ring:'#8b5cf6', bg:'bg-violet-950/40',  border:'border-violet-900' },
+ yellow: { btn:'bg-yellow-500',  bar:'bg-yellow-400',  badge:'text-yellow-400 border-yellow-700',   text:'text-yellow-400',  ring:'#eab308', bg:'bg-yellow-950/40',  border:'border-yellow-900' },
+ purple: { btn:'bg-purple-600',  bar:'bg-purple-500',  badge:'text-purple-400 border-purple-700',   text:'text-purple-400',  ring:'#a855f7', bg:'bg-purple-950/40',  border:'border-purple-900' },
+ teal:   { btn:'bg-teal-600',    bar:'bg-teal-500',    badge:'text-teal-400 border-teal-700',       text:'text-teal-400',    ring:'#14b8a6', bg:'bg-teal-950/40',    border:'border-teal-900' },
+ amber:  { btn:'bg-amber-500',   bar:'bg-amber-400',   badge:'text-amber-400 border-amber-700',     text:'text-amber-400',   ring:'#f59e0b', bg:'bg-amber-950/40',   border:'border-amber-900' },
+}
+const CATS = [
+ { id:'gym',      label:'Gym',         emoji:'🏋️' },
+ { id:'tennis',   label:'Tennis Prep', emoji:'🎾' },
+ { id:'mobility', label:'Mobility',    emoji:'🧘' },
+]
+const LOAD_CLR = { baja:'bg-emerald-950 text-emerald-400', media:'bg-amber-950 text-amber-400', alta:'bg-red-950 text-red-400' }
+const LOAD_LBL = { baja:'Baja', media:'Media', alta:'Alta' }
+const CIRC = 326.7
+
+// ─── STORAGE ───────────────────────────────────────────────────────────────────
+const WK='gt_weights_v3', HK='gt_history_v3', SK='gt_sessions_v5', DK='gt_dark_v1'
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)) }catch{} }
+function getSessions(){ return lsGet(SK) || SESSIONS_SEED }
+function saveSessionById(sess){ const all=getSessions().map(s=>s.id===sess.id?sess:s); lsSet(SK,all) }
+function getWeight(n){ const d=lsGet(WK)||{}; return d[n]||null }
+function logWeight(n,e){ const d=lsGet(WK)||{}; d[n]={...e,date:new Date().toISOString().slice(0,10)}; lsSet(WK,d) }
+function weekKey(){ const d=new Date(),day=d.getDay()||7,m=new Date(d); m.setDate(d.getDate()-day+1); return m.toISOString().slice(0,10) }
+function completedThisWeek(){ return (lsGet(HK)||{})[weekKey()]||[] }
+function markDone(id){ const h=lsGet(HK)||{},w=weekKey(); if(!h[w])h[w]=[]; if(!h[w].includes(id))h[w].push(id); lsSet(HK,h) }
+
+// ─── THEME ─────────────────────────────────────────────────────────────────────
+let darkMode = (()=>{ const v=lsGet(DK); return v!==null?v:window.matchMedia('(prefers-color-scheme: dark)').matches })()
+function applyTheme(){
+ if(darkMode) document.documentElement.classList.remove('light')
+ else document.documentElement.classList.add('light')
+ document.getElementById('tc').content = darkMode?'#08080e':'#f2f2f7'
+}
+function toggleDark(){ darkMode=!darkMode; lsSet(DK,darkMode); applyTheme(); render() }
+applyTheme()
+
+// ─── BUILD QUEUE ───────────────────────────────────────────────────────────────
+function buildQueue(session){
+ const q=[]
+ session.blocks.forEach((blk,bi)=>{
+  q.push({ type:'section', name:blk.name, icon:blk.icon,
+   instruction:`${blk.exercises.length} ejercicios · ~${blk.duration} min`, duration:3, bi })
+  blk.exercises.forEach(ex=>{
+   const base={...ex, bi, blockName:blk.name}
+   const totalSets=ex.sets||1
+   for(let s=0;s<totalSets;s++){
+    const si=totalSets>1?{setNum:s+1,totalSets}:{}
+    if(ex.side){
+     q.push({ type:'exercise',...base,...si, sideLabel:'IZQUIERDO' })
+     q.push({ type:'rest', name:'Cambia de lado', instruction:'Prepárate para el otro lado', duration:10, bi })
+     q.push({ type:'exercise',...base,...si, sideLabel:'DERECHO' })
+    } else {
+     q.push({ type:'exercise',...base,...si })
+    }
+    if(ex.rest) q.push({ type:'rest', name:s<totalSets-1?'Entre series':'Descanso',
+     instruction:s<totalSets-1?`Serie ${s+1} completada. Recupera.`:'Respira. Siguiente ejercicio.', duration:ex.rest, bi })
+   }
+  })
+ })
+ return q
+}
+
+// ─── VIBRATION ─────────────────────────────────────────────────────────────────
+function vibe(p){ navigator.vibrate?.(p) }
+
+// ─── STATE ─────────────────────────────────────────────────────────────────────
+let state = {
+ screen:'home', cat:'gym', sessionId:null,
+ queue:[], qIndex:0, timeLeft:0, itemDuration:0,
+ isRunning:false, wasRunning:false,
+ phase:'preview', countdownVal:3,
+ showWeight:false, pendingEx:null,
+ wf:{ weight:'', unit:'kg', tool:'mancuernas', rpe:'medio' },
+ editSessionId:null, editData:null, editExpanded:null, editImagePicker:null, editError:null,
+}
+let timerInterval=null, wakeLock=null
+
+// ─── TIMER ─────────────────────────────────────────────────────────────────────
+function startTimer(){
+ if(timerInterval) return
+ timerInterval=setInterval(()=>{
+  if(!state.isRunning) return
+  const cur=state.queue[state.qIndex]
+
+  // Countdown 3-2-1
+  if(cur?.type==='exercise'&&state.phase==='countdown'){
+   state.countdownVal--
+   vibe([15])
+   if(state.countdownVal<=0){
+    state.phase='active'
+    vibe([80])
+   }
+   render(); return
+  }
+
+  state.timeLeft--
+
+  if(state.timeLeft<=0){
+   const nxt=state.qIndex+1
+   if(nxt>=state.queue.length){
+    clearInterval(timerInterval); timerInterval=null
+    state.isRunning=false; state.screen='done'
+    markDone(state.sessionId)
+    vibe([100,50,100,50,300])
+   } else {
+    const ni=state.queue[nxt]
+    state.qIndex=nxt; state.timeLeft=ni.duration; state.itemDuration=ni.duration
+    if(ni.type==='exercise'){
+     state.phase='preview'; state.isRunning=false
+    } else if(ni.type==='rest'){
+     vibe([40,30,40])
+    }
+   }
+  }
+  render()
+ },1000)
+}
+function stopTimer(){ clearInterval(timerInterval); timerInterval=null }
+
+// ─── ACTIONS ───────────────────────────────────────────────────────────────────
+function selectSession(id){ state.sessionId=id; state.screen='session'; render() }
+function startWorkout(){
+ const session=getSessions().find(s=>s.id===state.sessionId)
+ if(!session||!session.blocks.length) return
+ const q=buildQueue(session)
+ const fi=q[0]
+ state={...state, screen:'workout', queue:q, qIndex:0,
+  timeLeft:fi.duration, itemDuration:fi.duration,
+  isRunning:fi.type!=='exercise', phase:fi.type==='exercise'?'preview':'section',
+  countdownVal:3, showWeight:false}
+ if(!timerInterval) startTimer()
+ navigator.wakeLock?.request('screen').then(l=>{wakeLock=l}).catch(()=>{})
+ render()
+}
+function startExercise(){
+ state.phase='countdown'; state.countdownVal=3; state.isRunning=true; render()
+}
+function toggleRun(){
+ if(state.phase==='preview'){ startExercise(); return }
+ state.isRunning=!state.isRunning; render()
+}
+function goNext(){
+ const nxt=state.qIndex+1
+ if(nxt>=state.queue.length){ stopTimer(); markDone(state.sessionId); state.screen='done'; state.isRunning=false; render(); return }
+ const ni=state.queue[nxt]
+ state.qIndex=nxt; state.timeLeft=ni.duration; state.itemDuration=ni.duration
+ if(ni.type==='exercise'){ state.phase='preview'; state.isRunning=false }
+ render()
+}
+function goPrev(){
+ if(state.qIndex<=0) return
+ const pi=state.qIndex-1
+ const prev=state.queue[pi]
+ state.qIndex=pi; state.timeLeft=prev.duration; state.itemDuration=prev.duration
+ if(prev.type==='exercise'){ state.phase='active'; state.isRunning=false }
+ else state.phase=prev.type==='rest'?'rest':'section'
+ render()
+}
+function restart(){
+ stopTimer()
+ const q=state.queue, fi=q[0]
+ state.qIndex=0; state.timeLeft=fi?.duration??0; state.itemDuration=fi?.duration??0
+ state.phase=fi?.type==='exercise'?'preview':'section'
+ state.isRunning=fi?.type!=='exercise'; state.screen='workout'
+ startTimer(); render()
+}
+function goHome(){ stopTimer(); wakeLock?.release(); state.screen='home'; state.isRunning=false; render() }
+function goSession(){ state.isRunning=false; state.screen='session'; render() }
+function setCat(c){ state.cat=c; render() }
+function openWeightModal(name){
+ const ex=getWeight(name)
+ state.pendingEx=name
+ state.wf=ex?{weight:ex.weight,unit:ex.unit||'kg',tool:ex.tool||'mancuernas',rpe:ex.rpe||'medio'}:{weight:'',unit:'kg',tool:'mancuernas',rpe:'medio'}
+ state.wasRunning=state.isRunning; state.isRunning=false
+ state.showWeight=true; render()
+}
+function closeWeightModal(){
+ state.showWeight=false; state.pendingEx=null
+ if(state.wasRunning) state.isRunning=true
+ render()
+}
+function captureWtInput(){ const el=document.getElementById('wt-n'); if(el) state.wf.weight=el.value }
+function saveWeightEntry(){ captureWtInput(); if(state.pendingEx) logWeight(state.pendingEx,{...state.wf}); closeWeightModal() }
+
+// Edit actions
+function openEdit(id){
+ const sess=getSessions().find(s=>s.id===id)
+ if(!sess) return
+ state.editSessionId=id; state.editData=JSON.parse(JSON.stringify(sess))
+ state.editExpanded=null; state.editImagePicker=null; state.editError=null
+ state.screen='edit'; render()
+}
+function goEditBack(){ state.screen='session'; state.editData=null; render() }
+function saveEdit(){
+ let valid=true
+ state.editData.blocks.forEach(b=>b.exercises.forEach(e=>{
+  const d=Number(e.duration)
+  if(!e.name?.trim()||isNaN(d)||d<=0) valid=false
+ }))
+ if(!valid){ state.editError='Revisa que todos los ejercicios tengan nombre y duración válida.'; render(); return }
+ saveSessionById(state.editData)
+ state.screen='session'; state.editData=null; render()
+}
+function editExpandEx(key){ state.editExpanded=state.editExpanded===key?null:key; render() }
+function moveExUp(bi,ei){
+ const exs=state.editData.blocks[bi].exercises
+ if(ei===0) return
+ ;[exs[ei-1],exs[ei]]=[exs[ei],exs[ei-1]]; render()
+}
+function moveExDown(bi,ei){
+ const exs=state.editData.blocks[bi].exercises
+ if(ei>=exs.length-1) return
+ ;[exs[ei],exs[ei+1]]=[exs[ei+1],exs[ei]]; render()
+}
+function deleteEx(bi,ei){
+ if(!confirm(`¿Eliminar "${state.editData.blocks[bi].exercises[ei].name}"?`)) return
+ state.editData.blocks[bi].exercises.splice(ei,1)
+ if(state.editExpanded===`${bi}-${ei}`) state.editExpanded=null
+ render()
+}
+function duplicateEx(bi,ei){
+ const ex=JSON.parse(JSON.stringify(state.editData.blocks[bi].exercises[ei]))
+ state.editData.blocks[bi].exercises.splice(ei+1,0,ex); render()
+}
+function addEx(bi){
+ const newEx={ name:'Nuevo ejercicio', instruction:'Descripción breve', duration:30, image:'' }
+ state.editData.blocks[bi].exercises.push(newEx)
+ state.editExpanded=`${bi}-${state.editData.blocks[bi].exercises.length-1}`
+ render()
+}
+function updateExField(bi,ei,field,value){
+ if(field==='duration') state.editData.blocks[bi].exercises[ei].duration=Number(value)||0
+ else state.editData.blocks[bi].exercises[ei][field]=value
+}
+function openImagePicker(bi,ei){ state.editImagePicker={bi,ei}; render() }
+function selectImage(name){
+ const {bi,ei}=state.editImagePicker
+ state.editData.blocks[bi].exercises[ei].image=name
+ state.editImagePicker=null; render()
+}
+function closeImagePicker(){ state.editImagePicker=null; render() }
+function getAllImages(){
+ const names=new Set()
+ SESSIONS_SEED.forEach(s=>s.blocks.forEach(b=>b.exercises.forEach(e=>{ if(e.image) names.add(e.image) })))
+ return [...names].sort()
+}
+
+// ─── FORMAT ────────────────────────────────────────────────────────────────────
+function fmt(s){ const m=Math.floor(s/60),sec=s%60; return m>0?`${m}:${String(sec).padStart(2,'0')}`:String(s) }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+// ─── RENDER HOME ───────────────────────────────────────────────────────────────
+function renderHome(){
+ const done=completedThisWeek()
+ const sessions=getSessions().filter(s=>s.category===state.cat)
+ return `
+ <div class="min-h-screen pb-10 fade" style="background:var(--bg)">
+  <div class="px-5 pt-12 pb-4 flex items-start justify-between">
+   <div>
+    <p class="text-[0.6rem] font-bold uppercase tracking-widest mb-1" style="color:var(--t3)">Training</p>
+    <h1 class="text-[1.9rem] font-black tracking-tight leading-tight" style="color:var(--t0)">Sesiones</h1>
+    <p class="text-xs mt-1" style="color:var(--t4)">${done.length>0?`${done.length} sesión${done.length>1?'es':''} esta semana`:'Elige tu sesión de hoy'}</p>
+   </div>
+   <button data-action="toggle-dark" class="mt-3 w-9 h-9 rounded-xl flex items-center justify-center text-base border"
+    style="background:var(--s2);border-color:var(--b2);color:var(--t1)">
+    ${darkMode?'☀':'◑'}
+   </button>
+  </div>
+  <div class="flex gap-0 px-4 mb-5" style="border-bottom:1px solid var(--b2)">
+   ${CATS.map(cat=>`
+    <button data-action="cat" data-cat="${cat.id}"
+     class="flex-1 pb-2.5 pt-1 text-xs font-bold tracking-wide ${state.cat===cat.id?'tab-active':'tab-inactive'}">
+     ${cat.emoji} ${cat.label}
+    </button>
+   `).join('')}
+  </div>
+  <div class="px-4 flex flex-col gap-3">
+   ${sessions.map(s=>{
+    const c=ACCENT[s.accent], isDone=done.includes(s.id)
+    return `
+    <button data-action="session" data-id="${s.id}" class="w-full text-left rounded-2xl p-4 active:scale-[0.98] transition-transform duration-100 border"
+     style="background:var(--s1);border-color:var(--b1)">
+     <div class="flex items-start gap-3.5">
+      <div class="flex-shrink-0 w-12 h-12 rounded-xl border flex items-center justify-center text-2xl ${c.bg} ${c.border}">${isDone?'✅':s.emoji}</div>
+      <div class="flex-1 min-w-0">
+       <div class="flex items-center gap-2 mb-1 flex-wrap">
+        ${s.optional?`<span class="text-[0.5rem] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full" style="background:var(--s3);color:var(--t3)">Opcional</span>`:''}
+        <span class="text-[0.55rem] font-bold uppercase px-1.5 py-0.5 rounded-full ${LOAD_CLR[s.load]}">${LOAD_LBL[s.load]}</span>
+        <span class="text-[0.55rem]" style="color:var(--t4)">${s.duration}</span>
+       </div>
+       <p class="text-[0.95rem] font-bold leading-snug mb-1" style="color:var(--t0)">${s.name}</p>
+       <p class="text-[0.7rem] leading-relaxed" style="color:var(--t3)">${s.goal}</p>
+       <p class="text-[0.58rem] mt-1.5 font-medium" style="color:var(--t4)">${s.frequency}</p>
+      </div>
+      <div class="text-lg flex-shrink-0 mt-0.5" style="color:var(--t3)">›</div>
+     </div>
+    </button>`
+   }).join('')}
+  </div>
+ </div>`
+}
+
+// ─── RENDER SESSION ────────────────────────────────────────────────────────────
+function renderSession(){
+ const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
+ const isDone=completedThisWeek().includes(session.id)
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center px-4 pt-5 pb-2">
+   <button data-action="home" class="text-sm py-1 pr-4" style="color:var(--t2)">← Sesiones</button>
+  </div>
+  <div class="px-5 py-3">
+   <div class="text-5xl mb-3">${session.emoji}</div>
+   <div class="flex items-center gap-2 mb-2 flex-wrap">
+    <span class="text-[0.55rem] font-bold uppercase px-1.5 py-0.5 rounded-full ${LOAD_CLR[session.load]}">${LOAD_LBL[session.load]}</span>
+    ${session.optional?`<span class="text-[0.5rem] font-bold uppercase px-1.5 py-0.5 rounded-full" style="background:var(--s3);color:var(--t3)">Opcional</span>`:''}
+    ${session.duration?`<span class="text-[0.58rem]" style="color:var(--t4)">${session.duration}</span>`:''}
+   </div>
+   <h2 class="text-2xl font-black leading-tight mb-1" style="color:var(--t0)">${session.name}</h2>
+   <p class="text-sm leading-relaxed mb-1" style="color:var(--t2)">${session.goal}</p>
+   <p class="text-[0.65rem] font-medium" style="color:var(--t3)">${session.frequency}</p>
+  </div>
+  <div class="px-4 flex flex-col gap-2 flex-1 overflow-y-auto pb-4">
+   ${session.blocks.map(blk=>`
+    <div class="rounded-xl p-3.5 flex items-center gap-3 border" style="background:var(--s1);border-color:var(--b1)">
+     <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0" style="background:var(--s3)">${blk.icon}</div>
+     <div class="flex-1">
+      <p class="text-sm font-bold" style="color:var(--t0)">${blk.name}</p>
+      <p class="text-[0.62rem]" style="color:var(--t3)">${blk.exercises.length} ejercicios · ~${blk.duration} min</p>
+     </div>
+    </div>
+   `).join('')}
+  </div>
+  <div class="px-4 pb-10 pt-2 flex flex-col gap-2">
+   ${isDone?`<p class="text-center text-[0.62rem] mb-1" style="color:var(--t4)">✓ Completada esta semana</p>`:''}
+   <button data-action="start" class="${c.btn} w-full py-5 rounded-2xl text-lg font-bold text-white">
+    ${isDone?'Repetir sesión':'Iniciar sesión'}
+   </button>
+   <button data-action="edit-open" data-id="${session.id}"
+    class="w-full py-3.5 rounded-2xl text-sm font-semibold border"
+    style="background:var(--s1);border-color:var(--b2);color:var(--t2)">
+    Editar rutina
+   </button>
+  </div>
+ </div>`
+}
+
+// ─── WORKOUT HELPERS ───────────────────────────────────────────────────────────
+function exProgress(){
+ const total=state.queue.filter(i=>i.type==='exercise').length
+ const done=state.queue.slice(0,state.qIndex).filter(i=>i.type==='exercise').length
+ const cur=state.queue[state.qIndex]
+ const curNum=cur?.type==='exercise'?done+1:done
+ const pct=total>0?(done/total)*100:0
+ return {total,done,curNum,pct}
+}
+function blockBar(session,curBi,c){
+ return session.blocks.map((_,bi)=>
+  `<div class="h-0.5 flex-1 rounded-full ${bi<curBi?c.bar:bi===curBi?'bg-white/30':'bg-[#1c1c28]'}"></div>`
+ ).join('')
+}
+function progressBar(pct,c){
+ return `<div class="h-1 mx-4 rounded-full overflow-hidden mb-2 flex-shrink-0" style="background:var(--b2)">
+  <div class="h-full rounded-full transition-all duration-500 ${c.bar}" style="width:${pct.toFixed(1)}%"></div>
+ </div>`
+}
+
+// ─── RENDER WORKOUT (dispatcher) ───────────────────────────────────────────────
+function renderWorkout(){
+ const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
+ const cur=state.queue[state.qIndex]
+ const {total,curNum,pct}=exProgress()
+ if(state.phase==='countdown') return renderCountdown(cur,c,session)
+ if(cur?.type==='section') return renderSection(cur,c,session,curNum,total,pct)
+ if(cur?.type==='rest') return renderRest(cur,c,session,curNum,total,pct)
+ if(state.phase==='preview') return renderPreview(cur,c,session,curNum,total,pct)
+ return renderActive(cur,c,session,curNum,total,pct)
+}
+
+// ─── RENDER COUNTDOWN ──────────────────────────────────────────────────────────
+function renderCountdown(cur,c,session){
+ return `
+ <div class="min-h-screen flex flex-col items-center justify-center fade" style="background:var(--bg)">
+  <p class="text-sm font-bold mb-8 px-8 text-center" style="color:var(--t2)">${esc(cur?.name||'')}</p>
+  <div class="cd-pop" style="color:var(--t0)">
+   <span class="text-[10rem] font-black leading-none tabular-nums">${state.countdownVal}</span>
+  </div>
+  <p class="text-xs mt-6 uppercase tracking-widest" style="color:var(--t3)">preparate</p>
+ </div>`
+}
+
+// ─── RENDER SECTION ────────────────────────────────────────────────────────────
+function renderSection(cur,c,session,curNum,total,pct){
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center justify-between px-4 pt-4 pb-1 flex-shrink-0">
+   <button data-action="session" class="text-sm py-1 pr-4" style="color:var(--t2)">← ${esc(session.name)}</button>
+   <span class="text-xs tabular-nums" style="color:var(--t3)">${curNum}/${total}</span>
+  </div>
+  ${progressBar(pct,c)}
+  <div class="flex-1 flex flex-col items-center justify-center text-center gap-3 px-6">
+   <div class="text-5xl">${cur.icon||session.emoji}</div>
+   <h2 class="text-2xl font-black" style="color:var(--t0)">${esc(cur.name)}</h2>
+   <p class="text-sm" style="color:var(--t2)">${esc(cur.instruction)}</p>
+   <p class="text-xs tabular-nums" style="color:var(--t4)">${fmt(state.timeLeft)}s</p>
+  </div>
+  <div class="flex gap-2.5 px-4 pb-10 flex-shrink-0">
+   <button data-action="next" class="${c.btn} flex-1 h-14 text-white rounded-2xl text-base font-bold">Continuar</button>
+  </div>
+ </div>`
+}
+
+// ─── RENDER REST ───────────────────────────────────────────────────────────────
+function renderRest(cur,c,session,curNum,total,pct){
+ const nxt=state.queue[state.qIndex+1]
+ const prog=state.itemDuration>0?state.timeLeft/state.itemDuration:1
+ const offset=(CIRC*(1-prog)).toFixed(1)
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center justify-between px-4 pt-4 pb-1 flex-shrink-0">
+   <span class="text-xs" style="color:var(--t3)">${esc(session.name)}</span>
+   <span class="text-xs tabular-nums" style="color:var(--t3)">${curNum}/${total}</span>
+  </div>
+  ${progressBar(pct,c)}
+  <div class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+   <div class="text-4xl mb-3">⏸</div>
+   <h2 class="text-xl font-bold mb-1" style="color:var(--t1)">${esc(cur.name)}</h2>
+   <p class="text-sm mb-6" style="color:var(--t3)">${esc(cur.instruction)}</p>
+   <div class="relative w-40 h-40 mb-4">
+    <svg viewBox="0 0 120 120" class="w-40 h-40">
+     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--rt)" stroke-width="5"/>
+     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--t4)" stroke-width="5"
+      stroke-dasharray="${CIRC}" stroke-dashoffset="${offset}"
+      stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:60px 60px"/>
+    </svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+     <span class="text-[3rem] font-black font-mono leading-none tabular-nums" style="color:var(--t1)">${fmt(state.timeLeft)}</span>
+     <span class="text-[0.45rem] uppercase tracking-widest mt-1" style="color:var(--t3)">descanso</span>
+    </div>
+   </div>
+   ${nxt?.type==='exercise'?`
+    <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl mt-2 border" style="background:var(--s1);border-color:var(--b1)">
+     <span class="text-xs flex-shrink-0" style="color:var(--t3)">Próximo:</span>
+     <span class="text-sm font-semibold truncate" style="color:var(--t0)">${esc(nxt.name)}${nxt.sideLabel?' · '+nxt.sideLabel:''}</span>
+    </div>
+   `:''}
+  </div>
+  <div class="flex gap-2.5 px-4 pb-10 flex-shrink-0">
+   <button data-action="prev" class="w-14 h-14 rounded-2xl text-xl flex items-center justify-center border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">←</button>
+   <button data-action="toggle" class="flex-1 h-14 rounded-2xl text-base font-bold border"
+    style="background:var(--s2);color:var(--t0);border-color:var(--b2)">
+    ${state.isRunning?'Pausa':'Continuar'}
+   </button>
+   <button data-action="next" class="w-14 h-14 rounded-2xl text-sm font-bold ${c.btn} text-white">
+    Saltar
+   </button>
+  </div>
+ </div>`
+}
+
+// ─── RENDER PREVIEW ────────────────────────────────────────────────────────────
+function renderPreview(cur,c,session,curNum,total,pct){
+ const curBi=cur?.bi??0
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center justify-between px-4 pt-4 pb-1 flex-shrink-0">
+   <button data-action="session" class="text-sm py-1 pr-4" style="color:var(--t2)">← ${esc(session.name)}</button>
+   <span class="text-xs tabular-nums" style="color:var(--t3)">${curNum}/${total}</span>
+  </div>
+  ${progressBar(pct,c)}
+  <div class="flex gap-0.5 px-4 pb-2 flex-shrink-0">${blockBar(session,curBi,c)}</div>
+  <div class="flex-1 flex flex-col px-5 overflow-y-auto py-1">
+   ${cur?.totalSets>1?`<p class="text-xs font-black tracking-widest mb-2 text-center" style="color:var(--t2)">SERIE ${cur.setNum} / ${cur.totalSets}</p>`:''}
+   ${cur?.sideLabel?`<div class="text-xs font-black tracking-widest px-3 py-1 border rounded-full self-center mb-2 ${c.badge}">${cur.sideLabel}</div>`:''}
+   <div class="relative w-full rounded-2xl overflow-hidden mb-4 flex-shrink-0 h-48 border ${c.bg} ${c.border}">
+    <img src="images/${cur?.image||'placeholder'}.png" alt="${esc(cur?.name)}" class="w-full h-full object-cover"
+     onerror="this.style.display='none'"/>
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+     <span class="text-6xl opacity-20">💪</span>
+    </div>
+   </div>
+   <h2 class="text-[1.7rem] font-black leading-tight mb-1" style="color:var(--t0)">${esc(cur?.name||'')}</h2>
+   <p class="text-sm leading-relaxed mb-3" style="color:var(--t1)">${esc(cur?.instruction||'')}</p>
+   <div class="flex gap-2 flex-wrap mb-3">
+    ${cur?.reps?`<div class="px-3 py-1 rounded-full text-sm font-semibold" style="background:var(--s3);color:var(--t0)">${cur.reps} reps</div>`:''}
+    <div class="px-3 py-1 rounded-full text-sm font-semibold" style="background:var(--s3);color:var(--t0)">${cur?.duration}s</div>
+   </div>
+   ${cur?.tips?.length?`<div class="flex flex-col gap-1.5">${cur.tips.map(t=>`<div class="rounded-lg px-3 py-2 border" style="background:var(--s1);border-color:var(--b2)"><span class="text-xs" style="color:var(--t2)">· ${esc(t)}</span></div>`).join('')}</div>`:''}
+  </div>
+  <div class="flex gap-2.5 px-4 pb-10 pt-3 flex-shrink-0">
+   <button data-action="prev" class="w-14 h-14 rounded-2xl text-xl flex items-center justify-center border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">←</button>
+   <button data-action="start-ex" class="${c.btn} flex-1 h-14 text-white rounded-2xl text-xl font-black">
+    Iniciar
+   </button>
+   <button data-action="next" class="w-14 h-14 rounded-2xl text-xl flex items-center justify-center border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">→</button>
+  </div>
+ </div>`
+}
+
+// ─── RENDER ACTIVE ─────────────────────────────────────────────────────────────
+function renderActive(cur,c,session,curNum,total,pct){
+ const curBi=cur?.bi??0
+ const nxt=state.queue[state.qIndex+1]
+ const timerRed=state.timeLeft<=5&&state.timeLeft>0&&state.isRunning
+ const prog=state.itemDuration>0?state.timeLeft/state.itemDuration:1
+ const offset=(CIRC*(1-prog)).toFixed(1)
+ const ringClr=timerRed?'#ef4444':(c.ring||'#10b981')
+ const wt=cur?.tracked?getWeight(cur.name):null
+ const encName=esc(cur?.name||'')
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center justify-between px-4 pt-4 pb-1 flex-shrink-0">
+   <span class="text-xs font-semibold" style="color:var(--t2)">${esc(cur?.blockName||'')}</span>
+   <span class="text-xs tabular-nums" style="color:var(--t3)">${curNum}/${total}</span>
+  </div>
+  ${progressBar(pct,c)}
+  <div class="flex gap-0.5 px-4 pb-2 flex-shrink-0">${blockBar(session,curBi,c)}</div>
+
+  <div class="flex items-center gap-3 px-4 mb-1 flex-shrink-0">
+   <div class="relative w-20 h-16 rounded-xl overflow-hidden flex-shrink-0 border ${c.bg} ${c.border}">
+    <img src="images/${cur?.image||'placeholder'}.png" class="w-full h-full object-cover"
+     onerror="this.style.display='none'"/>
+   </div>
+   <div class="flex-1 min-w-0">
+    ${cur?.totalSets>1?`<p class="text-[0.58rem] font-black tracking-widest mb-0.5" style="color:var(--t2)">SERIE ${cur.setNum}/${cur.totalSets}</p>`:''}
+    ${cur?.sideLabel?`<p class="text-[0.6rem] font-black tracking-wider mb-0.5 ${c.text}">${cur.sideLabel}</p>`:''}
+    <h2 class="text-[1.1rem] font-black leading-tight" style="color:var(--t0)">${esc(cur?.name||'')}</h2>
+    <p class="text-xs leading-snug" style="color:var(--t2)">${esc(cur?.instruction||'')}</p>
+   </div>
+  </div>
+
+  <div class="flex-1 flex items-center justify-center">
+   <div class="relative w-44 h-44">
+    <svg viewBox="0 0 120 120" class="w-44 h-44">
+     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--rt)" stroke-width="5"/>
+     <circle cx="60" cy="60" r="52" fill="none" stroke="${ringClr}" stroke-width="5"
+      stroke-dasharray="${CIRC}" stroke-dashoffset="${offset}"
+      stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:60px 60px"/>
+    </svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+     <span class="text-[3.2rem] font-black font-mono leading-none tabular-nums"
+      style="color:${timerRed?'#ef4444':'var(--t0)'}">${fmt(state.timeLeft)}</span>
+     <span class="text-[0.45rem] uppercase tracking-widest mt-0.5" style="color:var(--t3)">seg</span>
+    </div>
+   </div>
+  </div>
+
+  ${wt?`
+  <div class="mx-4 mb-1 flex-shrink-0">
+   <button data-action="weight" data-name="${encName}"
+    class="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2 border"
+    style="background:var(--s1);border-color:var(--b2)">
+    <span class="text-xs font-bold ${c.text}">${wt.weight}${wt.unit}</span>
+    ${wt.tool?`<span class="text-xs" style="color:var(--t3)">· ${esc(wt.tool)}</span>`:''}
+    <span class="text-xs" style="color:var(--t3)">✎</span>
+   </button>
+  </div>`:cur?.tracked?`
+  <div class="mx-4 mb-1 flex-shrink-0">
+   <button data-action="weight" data-name="${encName}"
+    class="w-full flex items-center justify-center rounded-xl px-4 py-2 border"
+    style="background:var(--s1);border-color:var(--b2)">
+    <span class="text-xs" style="color:var(--t2)">+ Registrar carga</span>
+   </button>
+  </div>`:''}
+
+  <div class="mx-4 mb-2 h-9 flex items-center flex-shrink-0">
+   ${nxt?`
+    <div class="w-full rounded-xl px-3 py-1.5 flex items-center gap-2 border"
+     style="background:var(--s1);border-color:var(--b1)">
+     <span class="text-[0.5rem] uppercase tracking-widest flex-shrink-0" style="color:var(--t3)">Siguiente</span>
+     <span class="text-xs font-medium truncate" style="color:var(--t2)">${esc(nxt.name)}${nxt.sideLabel?' · '+nxt.sideLabel:nxt.setNum?' · Serie '+nxt.setNum:''}</span>
+    </div>
+   `:`<p class="text-xs w-full text-center" style="color:var(--t3)">Último ejercicio</p>`}
+  </div>
+
+  <div class="flex gap-2.5 px-4 pb-10 flex-shrink-0">
+   <button data-action="prev" class="w-14 h-14 rounded-2xl text-xl flex items-center justify-center border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">←</button>
+   <button data-action="toggle" class="${c.btn} flex-1 h-14 text-white rounded-2xl text-base font-bold">
+    ${state.isRunning?'Pausa':'Continuar'}
+   </button>
+   <button data-action="next" class="w-14 h-14 rounded-2xl text-xl flex items-center justify-center border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">→</button>
+  </div>
+  ${state.showWeight?renderWeightModal():''}
+ </div>`
+}
+
+// ─── RENDER EDIT ───────────────────────────────────────────────────────────────
+function renderEdit(){
+ const sess=state.editData, c=ACCENT[sess.accent]
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0 border-b" style="border-color:var(--b2)">
+   <button data-action="edit-back" class="text-sm font-medium" style="color:var(--t2)">← ${esc(sess.name)}</button>
+   <button data-action="edit-save" class="text-sm font-bold px-4 py-2 rounded-xl text-white ${c.btn}">Guardar</button>
+  </div>
+  ${state.editError?`<p class="px-4 py-2 text-xs text-red-400">${esc(state.editError)}</p>`:''}
+  <div class="flex-1 overflow-y-auto px-4 pb-24">
+   ${sess.blocks.map((blk,bi)=>`
+    <div class="mt-5 mb-2">
+     <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--t2)">${blk.icon} ${esc(blk.name)}</p>
+     <div class="flex flex-col gap-2">
+      ${blk.exercises.map((ex,ei)=>{
+       const key=`${bi}-${ei}`, isExp=state.editExpanded===key
+       return `
+       <div class="rounded-2xl overflow-hidden border" style="background:var(--s1);border-color:var(--b1)">
+        <div class="flex items-center gap-3 p-3">
+         <div class="w-12 h-10 rounded-lg flex-shrink-0 overflow-hidden border" style="background:var(--s3);border-color:var(--b2)">
+          <img src="images/${ex.image||'placeholder'}.png" class="w-full h-full object-cover"
+           onerror="this.style.display='none'"/>
+         </div>
+         <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold truncate" style="color:var(--t0)">${esc(ex.name)}</p>
+          <p class="text-xs" style="color:var(--t3)">${ex.duration}s${ex.reps?' · '+ex.reps+' reps':''}</p>
+         </div>
+         <div class="flex items-center gap-1 flex-shrink-0">
+          <button data-action="ex-up" data-bi="${bi}" data-ei="${ei}" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background:var(--s2);color:var(--t2)">↑</button>
+          <button data-action="ex-down" data-bi="${bi}" data-ei="${ei}" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background:var(--s2);color:var(--t2)">↓</button>
+          <button data-action="ex-dup" data-bi="${bi}" data-ei="${ei}" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background:var(--s2);color:var(--t2)">⧉</button>
+          <button data-action="ex-del" data-bi="${bi}" data-ei="${ei}" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-red-400" style="background:var(--s2)">✕</button>
+          <button data-action="ex-expand" data-key="${key}" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background:var(--s2);color:var(--t2)">${isExp?'▲':'✎'}</button>
+         </div>
+        </div>
+        ${isExp?`
+        <div class="px-3 pb-4 flex flex-col gap-2.5 border-t" style="border-color:var(--b2)">
+         <div class="mt-2">
+          <label class="text-xs mb-1 block" style="color:var(--t2)">Nombre</label>
+          <input type="text" id="ef-n-${key}" value="${esc(ex.name)}"
+           class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
+           style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+           data-action="ex-field" data-field="name" data-bi="${bi}" data-ei="${ei}"/>
+         </div>
+         <div>
+          <label class="text-xs mb-1 block" style="color:var(--t2)">Instrucción</label>
+          <textarea id="ef-i-${key}" rows="2"
+           class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none resize-none"
+           style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+           data-action="ex-field" data-field="instruction" data-bi="${bi}" data-ei="${ei}">${esc(ex.instruction||'')}</textarea>
+         </div>
+         <div class="flex gap-2">
+          <div class="flex-1">
+           <label class="text-xs mb-1 block" style="color:var(--t2)">Duración (seg)</label>
+           <input type="number" id="ef-d-${key}" value="${ex.duration}" min="1" inputmode="numeric"
+            class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
+            style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+            data-action="ex-field" data-field="duration" data-bi="${bi}" data-ei="${ei}"/>
+          </div>
+          <div class="flex-1">
+           <label class="text-xs mb-1 block" style="color:var(--t2)">Imagen</label>
+           <button data-action="img-picker" data-bi="${bi}" data-ei="${ei}"
+            class="w-full rounded-xl px-3 py-2.5 text-sm border text-left truncate"
+            style="background:var(--s2);border-color:var(--b2);color:${ex.image?'var(--t0)':'var(--t3)'}">
+            ${ex.image||'Seleccionar…'}
+           </button>
+          </div>
+         </div>
+        </div>`:''}
+       </div>`
+      }).join('')}
+     </div>
+     <button data-action="ex-add" data-bi="${bi}"
+      class="w-full mt-2 py-3 rounded-xl text-sm font-semibold border border-dashed"
+      style="color:var(--t2);border-color:var(--b2)">
+      + Agregar ejercicio
+     </button>
+    </div>
+   `).join('')}
+  </div>
+  ${state.editImagePicker?renderImagePicker():''}
+ </div>`
+}
+
+// ─── RENDER IMAGE PICKER ───────────────────────────────────────────────────────
+function renderImagePicker(){
+ const images=getAllImages()
+ return `
+ <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.75)" data-action="img-picker-close-bg">
+  <div class="w-full rounded-t-3xl p-4 s-up" style="background:var(--s1)">
+   <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background:var(--b2)"></div>
+   <p class="text-sm font-bold mb-3" style="color:var(--t0)">Seleccionar imagen</p>
+   <div class="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+    ${images.map(name=>`
+     <button data-action="img-select" data-img="${name}"
+      class="relative aspect-square rounded-xl overflow-hidden border"
+      style="background:var(--s2);border-color:var(--b2)">
+      <img src="images/${name}.png" class="w-full h-full object-cover"
+       onerror="this.style.opacity='.15'"/>
+      <div class="absolute bottom-0 inset-x-0 px-0.5 pb-0.5">
+       <p class="text-[0.42rem] leading-tight text-center" style="color:var(--t2)">${name.replace(/-/g,' ')}</p>
+      </div>
+     </button>
+    `).join('')}
+   </div>
+   <button data-action="img-picker-close" class="w-full mt-3 py-3 text-sm" style="color:var(--t2)">Cancelar</button>
+  </div>
+ </div>`
+}
+
+// ─── RENDER WEIGHT MODAL ───────────────────────────────────────────────────────
+function renderWeightModal(){
+ const wf=state.wf
+ const tools=['mancuernas','barra','máquina','banda','peso corporal']
+ const rpes=[['fácil','😌'],['medio','💪'],['pesado','🔥']]
+ return `
+ <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.75)" data-action="close-weight-bg">
+  <div class="w-full rounded-t-3xl p-5 s-up border-t" style="background:var(--s1);border-color:var(--b2)" id="wt-modal">
+   <div class="w-10 h-1 rounded-full mx-auto mb-5" style="background:var(--t4)"></div>
+   <h3 class="text-base font-bold mb-0.5" style="color:var(--t0)">Registrar carga</h3>
+   <p class="text-xs mb-4" style="color:var(--t3)">${esc(state.pendingEx||'')}</p>
+   <div class="flex gap-2 mb-4">
+    <input id="wt-n" type="number" inputmode="decimal" placeholder="20" value="${esc(wf.weight)}"
+     class="flex-1 rounded-xl px-4 py-3 text-2xl font-bold border focus:outline-none"
+     style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
+    <div class="flex rounded-xl overflow-hidden border" style="border-color:var(--b2)">
+     <button data-action="wt-u-kg"  class="px-4 py-3 text-sm font-bold" style="${wf.unit==='kg' ?'background:#fff;color:#000':'background:var(--s2);color:var(--t3)'}">kg</button>
+     <button data-action="wt-u-lbs" class="px-4 py-3 text-sm font-bold" style="${wf.unit==='lbs'?'background:#fff;color:#000':'background:var(--s2);color:var(--t3)'}">lbs</button>
+    </div>
+   </div>
+   <p class="text-[0.6rem] uppercase tracking-wider mb-2" style="color:var(--t3)">Implemento</p>
+   <div class="flex flex-wrap gap-2 mb-4">
+    ${tools.map(t=>`<button data-action="wt-t-${t}" class="px-3 py-1.5 rounded-xl text-xs font-semibold border"
+     style="${wf.tool===t?'background:#fff;color:#000;border-color:#fff':'background:var(--s2);color:var(--t2);border-color:var(--b2)'}">${t}</button>`).join('')}
+   </div>
+   <p class="text-[0.6rem] uppercase tracking-wider mb-2" style="color:var(--t3)">Esfuerzo percibido</p>
+   <div class="grid grid-cols-3 gap-2 mb-5">
+    ${rpes.map(([r,e])=>`<button data-action="wt-r-${r}" class="py-2.5 rounded-xl text-xs font-semibold border"
+     style="${wf.rpe===r?'background:#fff;color:#000;border-color:#fff':'background:var(--s2);color:var(--t2);border-color:var(--b2)'}">${e} ${r}</button>`).join('')}
+   </div>
+   <button data-action="save-wt" class="w-full py-4 rounded-2xl font-bold text-base mb-2" style="background:#fff;color:#000">Guardar</button>
+   <button data-action="close-weight" class="w-full py-3 text-sm" style="color:var(--t2)">Cancelar</button>
+  </div>
+ </div>`
+}
+
+// ─── RENDER DONE ───────────────────────────────────────────────────────────────
+function renderDone(){
+ const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
+ return `
+ <div class="min-h-screen flex flex-col items-center justify-center p-8 text-center fade" style="background:var(--bg)">
+  <div class="text-6xl mb-4">${session.emoji}</div>
+  <p class="text-[0.58rem] font-bold uppercase tracking-widest mb-2" style="color:var(--t3)">Sesión completada</p>
+  <h2 class="text-4xl font-black mb-1" style="color:var(--t0)">¡Listo!</h2>
+  <p class="text-base mb-1" style="color:var(--t2)">${esc(session.name)}</p>
+  <p class="text-sm mb-10" style="color:var(--t3)">${session.blocks.length} bloques · ${session.duration||''}</p>
+  <button data-action="restart" class="w-full ${c.btn} text-white py-5 rounded-2xl text-lg font-bold mb-3">Repetir sesión</button>
+  <button data-action="session" class="w-full py-4 rounded-2xl text-base font-semibold mb-3 border"
+   style="background:var(--s1);border-color:var(--b2);color:var(--t0)">Ver sesión</button>
+  <button data-action="home" class="py-3 w-full text-base" style="color:var(--t2)">Volver al inicio</button>
+ </div>`
+}
+
+// ─── RENDER + EVENTS ───────────────────────────────────────────────────────────
+function render(){
+ const app=document.getElementById('app')
+ if(state.screen==='home')        app.innerHTML=renderHome()
+ else if(state.screen==='session') app.innerHTML=renderSession()
+ else if(state.screen==='workout') app.innerHTML=renderWorkout()
+ else if(state.screen==='edit')    app.innerHTML=renderEdit()
+ else if(state.screen==='done')    app.innerHTML=renderDone()
+ bindEvents()
+}
+
+function bindEvents(){
+ document.querySelectorAll('[data-action]').forEach(el=>{
+  const tag=el.tagName.toLowerCase()
+  const evt=(tag==='input'||tag==='textarea')?'input':'click'
+  el.addEventListener(evt, e=>{
+   const a=el.dataset.action
+   if(a==='close-weight-bg'&&e.target!==el) return
+   if(a==='img-picker-close-bg'&&e.target!==el) return
+   if(a==='cat')              setCat(el.dataset.cat)
+   else if(a==='session'&&el.dataset.id) selectSession(el.dataset.id)
+   else if(a==='session')     goSession()
+   else if(a==='start')       startWorkout()
+   else if(a==='start-ex')    startExercise()
+   else if(a==='toggle')      toggleRun()
+   else if(a==='next')        goNext()
+   else if(a==='prev')        goPrev()
+   else if(a==='restart')     restart()
+   else if(a==='home')        goHome()
+   else if(a==='toggle-dark') toggleDark()
+   else if(a==='weight')      openWeightModal(el.dataset.name)
+   else if(a==='close-weight'||a==='close-weight-bg') closeWeightModal()
+   else if(a==='save-wt')     saveWeightEntry()
+   else if(a==='wt-u-kg')     { captureWtInput(); state.wf.unit='kg';  render() }
+   else if(a==='wt-u-lbs')    { captureWtInput(); state.wf.unit='lbs'; render() }
+   else if(a.startsWith('wt-t-')) { captureWtInput(); state.wf.tool=a.slice(5); render() }
+   else if(a.startsWith('wt-r-')) { captureWtInput(); state.wf.rpe=a.slice(5);  render() }
+   // edit
+   else if(a==='edit-open')   openEdit(el.dataset.id)
+   else if(a==='edit-back')   goEditBack()
+   else if(a==='edit-save')   saveEdit()
+   else if(a==='ex-expand')   editExpandEx(el.dataset.key)
+   else if(a==='ex-up')       moveExUp(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='ex-down')     moveExDown(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='ex-dup')      duplicateEx(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='ex-del')      deleteEx(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='ex-add')      addEx(+el.dataset.bi)
+   else if(a==='ex-field')    updateExField(+el.dataset.bi,+el.dataset.ei,el.dataset.field,el.value)
+   else if(a==='img-picker')  openImagePicker(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='img-select')  selectImage(el.dataset.img)
+   else if(a==='img-picker-close'||a==='img-picker-close-bg') closeImagePicker()
+  })
+ })
+}
+
+render()
+startTimer()
+</script>
+</body>
+</html>
