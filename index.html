@@ -457,6 +457,113 @@ const LOAD_CLR = { baja:'bg-emerald-950 text-emerald-400', media:'bg-amber-950 t
 const LOAD_LBL = { baja:'Baja', media:'Media', alta:'Alta' }
 const CIRC = 326.7
 
+// ─── VISUALS ───────────────────────────────────────────────────────────────────
+const VISUALS = {
+ squat:    { emoji:'🦵', label:'Piernas' },
+ hinge:    { emoji:'🏗️', label:'Bisagra' },
+ lunge:    { emoji:'🧎', label:'Estocada' },
+ push:     { emoji:'💪', label:'Empuje' },
+ pull:     { emoji:'🏊', label:'Jalón' },
+ plank:    { emoji:'🔩', label:'Core' },
+ bridge:   { emoji:'⬆️', label:'Glúteos' },
+ rotation: { emoji:'🔄', label:'Rotación' },
+ stretch:  { emoji:'🧘', label:'Estiramiento' },
+ foam:     { emoji:'🪵', label:'Foam Roll' },
+ jump:     { emoji:'⚡', label:'Potencia' },
+ mobility: { emoji:'🌀', label:'Movilidad' },
+ tennis:   { emoji:'🎾', label:'Tenis' },
+}
+
+// ─── EXERCISE META ─────────────────────────────────────────────────────────────
+// visualId, bodyZone, feel — sobreescribibles desde editData
+const EXERCISE_META = {
+ 'worlds-greatest-stretch':{ visualId:'lunge',    bodyZone:'cadera · columna torácica', feel:'apertura de cadera y rotación torácica — no dolor en rodilla' },
+ 'hip-9090':               { visualId:'mobility', bodyZone:'cadera',                   feel:'rotación interna y externa — trabaja el rango activo, no pasivo' },
+ 'ankle-dorsiflexion':     { visualId:'mobility', bodyZone:'tobillo',                  feel:'tensión en tobillo trasero — talón no se levanta del suelo' },
+ 'leg-swing-lateral':      { visualId:'mobility', bodyZone:'cadera · aductor',         feel:'movimiento desde la cadera, tronco completamente quieto' },
+ 'high-knees':             { visualId:'jump',     bodyZone:'piernas · cardio',         feel:'antepié, no talones — brazos activos' },
+ 'back-squat':             { visualId:'squat',    bodyZone:'cuádriceps · glúteos',     feel:'empuja desde el talón — rodillas sobre los pies, no hacia adentro' },
+ 'romanian-deadlift':      { visualId:'hinge',    bodyZone:'isquiotibiales · glúteos', feel:'tensión en isquios al bajar, contracción de glúteo al subir' },
+ 'bulgarian-split-squat':  { visualId:'lunge',    bodyZone:'cuádricep · glúteo',       feel:'trabajo en cuádricep y glúteo — no en la rodilla delantera' },
+ 'box-jump':               { visualId:'jump',     bodyZone:'potencia de pierna',       feel:'explosión desde la cadera — aterrizaje suave absorbiendo el impacto' },
+ 'lateral-bound':          { visualId:'jump',     bodyZone:'glúteo medio · lateral',   feel:'control al aterrizar en un pie — carga la cadera al absorber' },
+ 'pallof-press':           { visualId:'rotation', bodyZone:'core anti-rotación',       feel:'resistencia en el centro del cuerpo, no en los brazos' },
+ 'dead-bug':               { visualId:'plank',    bodyZone:'core profundo',            feel:'lumbar pegada al suelo en todo momento — ahí está el trabajo' },
+ 'figure-4':               { visualId:'stretch',  bodyZone:'glúteo · piriforme',       feel:'profundidad en el glúteo — no debe doler la rodilla' },
+ 'hip-flexor-lunge':       { visualId:'stretch',  bodyZone:'flexor de cadera',         feel:'estiramiento al frente de la cadera trasera — no en la lumbar' },
+ 'thoracic-extension':     { visualId:'stretch',  bodyZone:'columna torácica',         feel:'apertura en zona media de la espalda — nunca en la lumbar' },
+ 'band-pull-apart':        { visualId:'pull',     bodyZone:'escápula · espalda alta',  feel:'retracción escapular — brazos rectos todo el recorrido' },
+ 'arm-circles':            { visualId:'mobility', bodyZone:'hombro',                   feel:'movimiento fluido — aumenta la amplitud gradualmente' },
+ 'shoulder-cars':          { visualId:'mobility', bodyZone:'hombro (articular)',        feel:'máxima amplitud sin compensar con el tronco' },
+ 'thoracic-rotation-standing':{ visualId:'rotation', bodyZone:'columna torácica',      feel:'rotación en la espalda media — la cadera no se mueve' },
+ 'external-rotation-band': { visualId:'pull',     bodyZone:'manguito rotador',         feel:'movimiento lento y controlado — no es fuerza, es control motor' },
+ 'face-pull':              { visualId:'pull',     bodyZone:'manguito · escápula',      feel:'escápulas juntas al final — codos siempre por encima de los hombros' },
+ 'y-t-w':                  { visualId:'pull',     bodyZone:'escápula · trapecios',     feel:'contracción en la parte alta de la espalda — muy liviano' },
+ 'lat-pulldown':           { visualId:'pull',     bodyZone:'dorsal · bíceps',          feel:'inicia con las escápulas, no con el brazo — dorsal hace el trabajo' },
+ 'cable-row':              { visualId:'pull',     bodyZone:'dorsal · escápula',        feel:'escápulas se juntan al final — espalda recta en todo momento' },
+ 'db-row':                 { visualId:'pull',     bodyZone:'dorsal · romboides',       feel:'codo hacia el techo — sientes el dorsal, no el bíceps' },
+ 'landmine-press':         { visualId:'push',     bodyZone:'hombro · pectoral · core', feel:'movimiento diagonal natural — no arquees la lumbar' },
+ 'plank-shoulder-tap':     { visualId:'plank',    bodyZone:'core · hombro',            feel:'caderas no rotan al tocar el hombro — ese es el trabajo real' },
+ 'bird-dog':               { visualId:'plank',    bodyZone:'core · glúteo',            feel:'cadera no sube al extender la pierna — espalda neutra siempre' },
+ 'trap-bar-deadlift':      { visualId:'hinge',    bodyZone:'full body · isquios',      feel:'empuja el suelo, no levantes solo — cadera y hombros suben juntos' },
+ 'hip-thrust':             { visualId:'bridge',   bodyZone:'glúteos',                  feel:'contracción máxima en glúteo al tope — no deberías sentirlo en la lumbar' },
+ 'cable-rotation':         { visualId:'rotation', bodyZone:'core rotacional · cadera', feel:'la potencia sale de la cadera — los brazos siguen, no lideran' },
+ 'med-ball-slam':          { visualId:'push',     bodyZone:'core · full body',         feel:'activa el core antes del golpe — velocidad máxima' },
+ 'broad-jump':             { visualId:'jump',     bodyZone:'potencia de pierna',       feel:'aterriza con cadera atrás y rodillas amortiguando' },
+ 'side-plank-rotation':    { visualId:'rotation', bodyZone:'core lateral · oblicuos',  feel:'cadera no cae al rotar — oblicuo hace el trabajo' },
+ 'jump-rope':              { visualId:'jump',     bodyZone:'pantorrilla · cardio',     feel:'antepié siempre — ritmo constante, no des saltos grandes' },
+ 'ankle-circles':          { visualId:'mobility', bodyZone:'tobillo',                  feel:'máxima amplitud circular — trabaja el rango activo' },
+ 'leg-swing-front':        { visualId:'mobility', bodyZone:'cadera · isquiotibiales',  feel:'movimiento desde la cadera — tronco estable' },
+ 'lateral-shuffle':        { visualId:'mobility', bodyZone:'aductor · glúteo',         feel:'peso en antepié — pies nunca se juntan' },
+ 'split-step':             { visualId:'jump',     bodyZone:'reactividad · pierna',     feel:'aterrizaje suave y reactivo — listo para mover inmediatamente' },
+ 'shadow-forehand':        { visualId:'tennis',   bodyZone:'rotación · forehand',      feel:'cadera lidera la rotación — follow-through completo' },
+ 'shadow-backhand':        { visualId:'tennis',   bodyZone:'rotación · revés',         feel:'hombros rotan, cadera lidera — sigue el impacto imaginario' },
+ 'shadow-volley':          { visualId:'tennis',   bodyZone:'coordinación · red',       feel:'pies nunca quietos — muñeca firme en la volea' },
+ 'foam-thoracic':          { visualId:'foam',     bodyZone:'columna torácica',         feel:'pausa en los puntos tensos — solo zona media, no la lumbar' },
+ 'foam-calves':            { visualId:'foam',     bodyZone:'pantorrilla',              feel:'gira hacia adentro y afuera para cubrir todo el tejido' },
+ 'foam-hamstrings':        { visualId:'foam',     bodyZone:'isquiotibiales',           feel:'deja que el peso haga el trabajo — pausa en zonas tensas' },
+ 'foam-it-band':           { visualId:'foam',     bodyZone:'banda IT · muslo lateral', feel:'es incómodo pero normal — no ruedes sobre la articulación' },
+ 'foam-glute':             { visualId:'foam',     bodyZone:'glúteo · piriforme',       feel:'inclínate hacia el lado del tobillo cruzado para más presión' },
+ 'foam-quads':             { visualId:'foam',     bodyZone:'cuádriceps',               feel:'rota hacia adentro y afuera para cubrir todo' },
+ 'pigeon':                 { visualId:'stretch',  bodyZone:'glúteo · cadera',          feel:'cada exhala permite más profundidad — sin dolor en la rodilla' },
+ 'thoracic-rotation-quad': { visualId:'rotation', bodyZone:'columna torácica',         feel:'rotación en la espalda media — la cadera no rota' },
+ 'thread-needle':          { visualId:'rotation', bodyZone:'torácica · hombro',        feel:'hombro toca el suelo — cadera permanece arriba' },
+ 'shoulder-9090':          { visualId:'mobility', bodyZone:'movilidad de hombro',      feel:'deja que la gravedad haga el trabajo — no fuerces el rango' },
+ 'wall-hamstring':         { visualId:'stretch',  bodyZone:'isquiotibiales',           feel:'glúteo pegado a la pared — relaja los pies completamente' },
+ 'spinal-twist':           { visualId:'rotation', bodyZone:'columna · oblicuos',       feel:'hombro contrario pegado al suelo — no fuerces la rotación' },
+ 'childs-pose':            { visualId:'stretch',  bodyZone:'espalda baja · hombros',   feel:'columna se alarga con cada exhala — relaja completamente' },
+ 'cat-cow':                { visualId:'mobility', bodyZone:'columna completa',         feel:'inhala al arquear (cow), exhala al redondear (cat)' },
+ 'squat-to-stand':         { visualId:'squat',    bodyZone:'movilidad de pierna',      feel:'talones en el suelo al hacer el squat' },
+ 'cross-body-shoulder':    { visualId:'stretch',  bodyZone:'dorsal posterior · hombro',feel:'no eleves el hombro del brazo estirado' },
+ 'doorway-chest':          { visualId:'stretch',  bodyZone:'pectoral · hombro ant.',   feel:'sientes el estiramiento en el pecho, no en el hombro' },
+ 'neck-mobility':          { visualId:'mobility', bodyZone:'cuello',                   feel:'movimientos lentos y controlados — sin crujir a propósito' },
+ 'prone-y':                { visualId:'pull',     bodyZone:'trapecios · manguito',     feel:'pausa 1s arriba — activa la parte alta de la espalda' },
+ 'hip-hinge':              { visualId:'hinge',    bodyZone:'isquiotibiales · glúteos', feel:'espalda neutra — caderas atrás, no abajo' },
+}
+
+function getExMeta(ex){
+ const m = EXERCISE_META[ex.image]||{}
+ return {
+  visualId:  ex.visualId  || m.visualId  || 'mobility',
+  bodyZone:  ex.bodyZone  || m.bodyZone  || '',
+  feel:      ex.feel      || m.feel      || '',
+ }
+}
+
+function renderVisual(ex, accent, compact=false){
+ const meta=getExMeta(ex), vis=VISUALS[meta.visualId]||VISUALS.mobility
+ const c=ACCENT[accent]
+ if(compact) return `
+  <div class="w-20 h-16 rounded-xl flex-shrink-0 flex items-center justify-center border ${c.bg} ${c.border}">
+   <span class="text-3xl">${vis.emoji}</span>
+  </div>`
+ return `
+  <div class="w-full rounded-2xl flex flex-col items-center justify-center gap-2 h-44 border flex-shrink-0 ${c.bg} ${c.border}">
+   <span class="text-7xl">${vis.emoji}</span>
+   ${meta.bodyZone?`<div class="px-3 py-1 rounded-full text-xs font-bold" style="background:rgba(0,0,0,0.25);color:var(--t0)">${meta.bodyZone}</div>`:''}
+  </div>`
+}
+
 // ─── STORAGE ───────────────────────────────────────────────────────────────────
 const WK='gt_weights_v3', HK='gt_history_v3', SK='gt_sessions_v5', DK='gt_dark_v1'
 function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } }
@@ -516,6 +623,7 @@ let state = {
  phase:'preview', countdownVal:3,
  showWeight:false, pendingEx:null,
  wf:{ weight:'', unit:'kg', tool:'mancuernas', rpe:'medio' },
+ showCoach:false,
  editSessionId:null, editData:null, editExpanded:null, editImagePicker:null, editError:null,
 }
 let timerInterval=null, wakeLock=null
@@ -626,6 +734,8 @@ function closeWeightModal(){
 }
 function captureWtInput(){ const el=document.getElementById('wt-n'); if(el) state.wf.weight=el.value }
 function saveWeightEntry(){ captureWtInput(); if(state.pendingEx) logWeight(state.pendingEx,{...state.wf}); closeWeightModal() }
+
+function toggleCoach(){ state.showCoach=!state.showCoach; render() }
 
 // Edit actions
 function openEdit(id){
@@ -907,6 +1017,7 @@ function renderRest(cur,c,session,curNum,total,pct){
 // ─── RENDER PREVIEW ────────────────────────────────────────────────────────────
 function renderPreview(cur,c,session,curNum,total,pct){
  const curBi=cur?.bi??0
+ const meta=getExMeta(cur||{})
  return `
  <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
   <div class="flex items-center justify-between px-4 pt-4 pb-1 flex-shrink-0">
@@ -918,19 +1029,14 @@ function renderPreview(cur,c,session,curNum,total,pct){
   <div class="flex-1 flex flex-col px-5 overflow-y-auto py-1">
    ${cur?.totalSets>1?`<p class="text-xs font-black tracking-widest mb-2 text-center" style="color:var(--t2)">SERIE ${cur.setNum} / ${cur.totalSets}</p>`:''}
    ${cur?.sideLabel?`<div class="text-xs font-black tracking-widest px-3 py-1 border rounded-full self-center mb-2 ${c.badge}">${cur.sideLabel}</div>`:''}
-   <div class="relative w-full rounded-2xl overflow-hidden mb-4 flex-shrink-0 h-48 border ${c.bg} ${c.border}">
-    <img src="images/${cur?.image||'placeholder'}.png" alt="${esc(cur?.name)}" class="w-full h-full object-cover"
-     onerror="this.style.display='none'"/>
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-     <span class="text-6xl opacity-20">💪</span>
-    </div>
-   </div>
-   <h2 class="text-[1.7rem] font-black leading-tight mb-1" style="color:var(--t0)">${esc(cur?.name||'')}</h2>
+   ${renderVisual(cur||{}, session.accent)}
+   <h2 class="text-[1.7rem] font-black leading-tight mt-3 mb-1" style="color:var(--t0)">${esc(cur?.name||'')}</h2>
    <p class="text-sm leading-relaxed mb-3" style="color:var(--t1)">${esc(cur?.instruction||'')}</p>
    <div class="flex gap-2 flex-wrap mb-3">
     ${cur?.reps?`<div class="px-3 py-1 rounded-full text-sm font-semibold" style="background:var(--s3);color:var(--t0)">${cur.reps} reps</div>`:''}
     <div class="px-3 py-1 rounded-full text-sm font-semibold" style="background:var(--s3);color:var(--t0)">${cur?.duration}s</div>
    </div>
+   ${meta.feel?`<div class="rounded-xl px-3 py-2.5 mb-2 border-l-2" style="background:var(--s1);border-color:${c.ring}"><p class="text-xs font-semibold mb-0.5" style="color:${c.ring}">Dónde sentirlo</p><p class="text-xs" style="color:var(--t1)">${esc(meta.feel)}</p></div>`:''}
    ${cur?.tips?.length?`<div class="flex flex-col gap-1.5">${cur.tips.map(t=>`<div class="rounded-lg px-3 py-2 border" style="background:var(--s1);border-color:var(--b2)"><span class="text-xs" style="color:var(--t2)">· ${esc(t)}</span></div>`).join('')}</div>`:''}
   </div>
   <div class="flex gap-2.5 px-4 pb-10 pt-3 flex-shrink-0">
@@ -953,6 +1059,7 @@ function renderActive(cur,c,session,curNum,total,pct){
  const prog=state.itemDuration>0?state.timeLeft/state.itemDuration:1
  const offset=(CIRC*(1-prog)).toFixed(1)
  const ringClr=timerRed?'#ef4444':(c.ring||'#10b981')
+ const meta=getExMeta(cur||{})
  const wt=cur?.tracked?getWeight(cur.name):null
  const encName=esc(cur?.name||'')
  return `
@@ -965,16 +1072,16 @@ function renderActive(cur,c,session,curNum,total,pct){
   <div class="flex gap-0.5 px-4 pb-2 flex-shrink-0">${blockBar(session,curBi,c)}</div>
 
   <div class="flex items-center gap-3 px-4 mb-1 flex-shrink-0">
-   <div class="relative w-20 h-16 rounded-xl overflow-hidden flex-shrink-0 border ${c.bg} ${c.border}">
-    <img src="images/${cur?.image||'placeholder'}.png" class="w-full h-full object-cover"
-     onerror="this.style.display='none'"/>
-   </div>
+   ${renderVisual(cur||{}, session.accent, true)}
    <div class="flex-1 min-w-0">
     ${cur?.totalSets>1?`<p class="text-[0.58rem] font-black tracking-widest mb-0.5" style="color:var(--t2)">SERIE ${cur.setNum}/${cur.totalSets}</p>`:''}
     ${cur?.sideLabel?`<p class="text-[0.6rem] font-black tracking-wider mb-0.5 ${c.text}">${cur.sideLabel}</p>`:''}
     <h2 class="text-[1.1rem] font-black leading-tight" style="color:var(--t0)">${esc(cur?.name||'')}</h2>
+    ${meta.bodyZone?`<p class="text-[0.6rem] font-semibold mb-0.5" style="color:var(--t3)">${meta.bodyZone}</p>`:''}
     <p class="text-xs leading-snug" style="color:var(--t2)">${esc(cur?.instruction||'')}</p>
    </div>
+   <button data-action="coach" class="flex-shrink-0 px-2 py-1 rounded-lg text-[0.6rem] font-bold border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">?</button>
   </div>
 
   <div class="flex-1 flex items-center justify-center">
@@ -1031,6 +1138,43 @@ function renderActive(cur,c,session,curNum,total,pct){
     style="background:var(--s2);color:var(--t2);border-color:var(--b2)">→</button>
   </div>
   ${state.showWeight?renderWeightModal():''}
+  ${state.showCoach?renderCoachModal(cur):''}
+ </div>`
+}
+
+// ─── RENDER COACH MODAL ────────────────────────────────────────────────────────
+function renderCoachModal(cur){
+ const meta=getExMeta(cur||{})
+ const tips=cur?.tips||[]
+ return `
+ <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.7)" data-action="coach-close-bg">
+  <div class="w-full rounded-t-3xl p-5 s-up" style="background:var(--s1)">
+   <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background:var(--b2)"></div>
+   <p class="text-base font-black mb-4" style="color:var(--t0)">${esc(cur?.name||'')}</p>
+   <div class="flex flex-col gap-3 max-h-72 overflow-y-auto">
+    <div class="rounded-xl p-3 border" style="background:var(--s2);border-color:var(--b2)">
+     <p class="text-[0.6rem] font-bold uppercase tracking-wider mb-1" style="color:var(--t2)">Cómo hacerlo</p>
+     <p class="text-sm" style="color:var(--t0)">${esc(cur?.instruction||'')}</p>
+    </div>
+    ${meta.feel?`
+    <div class="rounded-xl p-3 border-l-2" style="background:var(--s2);border-color:${ACCENT[cur?.accent||'emerald']?.ring||'#10b981'}">
+     <p class="text-[0.6rem] font-bold uppercase tracking-wider mb-1" style="color:var(--t2)">Dónde sentirlo</p>
+     <p class="text-sm" style="color:var(--t0)">${esc(meta.feel)}</p>
+    </div>`:''}
+    ${tips.length?`
+    <div>
+     <p class="text-[0.6rem] font-bold uppercase tracking-wider mb-2" style="color:var(--t2)">Tips técnicos</p>
+     <div class="flex flex-col gap-1.5">
+      ${tips.map(t=>`<div class="flex items-start gap-2 rounded-lg px-3 py-2 border" style="background:var(--s2);border-color:var(--b2)">
+       <span class="text-xs mt-0.5" style="color:var(--t3)">·</span>
+       <span class="text-xs" style="color:var(--t1)">${esc(t)}</span>
+      </div>`).join('')}
+     </div>
+    </div>`:''}
+   </div>
+   <button data-action="coach-close" class="w-full mt-4 py-3 rounded-2xl text-sm font-semibold border"
+    style="background:var(--s2);color:var(--t2);border-color:var(--b2)">Cerrar</button>
+  </div>
  </div>`
 }
 
@@ -1085,6 +1229,14 @@ function renderEdit(){
            class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none resize-none"
            style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
            data-action="ex-field" data-field="instruction" data-bi="${bi}" data-ei="${ei}">${esc(ex.instruction||'')}</textarea>
+         </div>
+         <div>
+          <label class="text-xs mb-1 block" style="color:var(--t2)">Zona del cuerpo</label>
+          <input type="text" id="ef-z-${key}" value="${esc(ex.bodyZone||getExMeta(ex).bodyZone)}"
+           placeholder="ej: glúteos · cuádriceps"
+           class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
+           style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+           data-action="ex-field" data-field="bodyZone" data-bi="${bi}" data-ei="${ei}"/>
          </div>
          <div class="flex gap-2">
           <div class="flex-1">
@@ -1228,6 +1380,8 @@ function bindEvents(){
    else if(a==='restart')     restart()
    else if(a==='home')        goHome()
    else if(a==='toggle-dark') toggleDark()
+   else if(a==='coach')      toggleCoach()
+   else if(a==='coach-close'||a==='coach-close-bg') { if(a==='coach-close-bg'&&e.target!==el) return; state.showCoach=false; render() }
    else if(a==='weight')      openWeightModal(el.dataset.name)
    else if(a==='close-weight'||a==='close-weight-bg') closeWeightModal()
    else if(a==='save-wt')     saveWeightEntry()
