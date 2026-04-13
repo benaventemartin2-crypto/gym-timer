@@ -17,8 +17,31 @@
 html.light{
   --bg:#f2f2f7;--s1:#ffffff;--s2:#e8e8ed;--s3:#f0f0f5;
   --b1:#e5e5ea;--b2:#d1d1d6;--rt:#e5e5ea;
-  --t0:#1c1c1e;--t1:#6e6e73;--t2:#8e8e93;--t3:#aeaeb2;--t4:#c7c7cc;
+  --t0:#1c1c1e;--t1:#3c3c43;--t2:#636366;--t3:#8e8e93;--t4:#aeaeb2;
 }
+/* Accent icon backgrounds — light mode */
+html.light [class*="bg-emerald-950"]{background-color:#d1fae5!important;}
+html.light [class*="bg-sky-950"]{background-color:#e0f2fe!important;}
+html.light [class*="bg-violet-950"]{background-color:#ede9fe!important;}
+html.light [class*="bg-yellow-950"]{background-color:#fef9c3!important;}
+html.light [class*="bg-purple-950"]{background-color:#f3e8ff!important;}
+html.light [class*="bg-teal-950"]{background-color:#ccfbf1!important;}
+html.light [class*="bg-amber-950"]{background-color:#fef3c7!important;}
+html.light [class*="border-emerald-900"]{border-color:#6ee7b7!important;}
+html.light [class*="border-sky-900"]{border-color:#7dd3fc!important;}
+html.light [class*="border-violet-900"]{border-color:#c4b5fd!important;}
+html.light [class*="border-yellow-900"]{border-color:#fde047!important;}
+html.light [class*="border-purple-900"]{border-color:#d8b4fe!important;}
+html.light [class*="border-teal-900"]{border-color:#5eead4!important;}
+html.light [class*="border-amber-900"]{border-color:#fcd34d!important;}
+html.light [class*="text-emerald-400"]{color:#059669!important;}
+html.light [class*="text-sky-400"]{color:#0284c7!important;}
+html.light [class*="text-violet-400"]{color:#7c3aed!important;}
+html.light [class*="text-yellow-400"]{color:#d97706!important;}
+html.light [class*="text-purple-400"]{color:#9333ea!important;}
+html.light [class*="text-teal-400"]{color:#0d9488!important;}
+html.light [class*="text-amber-400"]{color:#d97706!important;}
+html.light [class*="text-red-400"]{color:#dc2626!important;}
 *{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
 body{overscroll-behavior:none;user-select:none;background:var(--bg);color:var(--t0);}
 .fade{animation:fadeIn .18s ease both;}
@@ -447,7 +470,7 @@ function completedThisWeek(){ return (lsGet(HK)||{})[weekKey()]||[] }
 function markDone(id){ const h=lsGet(HK)||{},w=weekKey(); if(!h[w])h[w]=[]; if(!h[w].includes(id))h[w].push(id); lsSet(HK,h) }
 
 // ─── THEME ─────────────────────────────────────────────────────────────────────
-let darkMode = (()=>{ const v=lsGet(DK); return v!==null?v:window.matchMedia('(prefers-color-scheme: dark)').matches })()
+let darkMode = (()=>{ const v=lsGet(DK); return v!==null?v:true })()
 function applyTheme(){
  if(darkMode) document.documentElement.classList.remove('light')
  else document.documentElement.classList.add('light')
