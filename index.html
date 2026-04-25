@@ -307,13 +307,33 @@ const SESSIONS_SEED = [
       tips:['Core apretado — no arquees la lumbar','La barra pasa justo frente a la cara al subir','Exhala en el esfuerzo'],
       duration:45, sets:4, reps:'6', rest:90, tracked:true, image:'military-press' },
    ]},
-   { name:'Cool Down', icon:'🌊', duration:6, exercises:[
+   { name:'Foam Roller', icon:'🪵', duration:8, exercises:[
+    { name:'Rodillo — cuádriceps', instruction:'Boca abajo. Rodillo bajo el muslo. Rueda de cadera a rodilla.',
+      tips:['Rota la pierna para cubrir todo el tejido','Pausa en zonas de tensión'],
+      duration:50, side:true, image:'foam-quads' },
+    { name:'Rodillo — isquiotibiales', instruction:'Rodillo bajo los isquios. Rueda lento hasta la rodilla.',
+      tips:['Deja que el peso corporal haga el trabajo','Pausa en puntos tensos'],
+      duration:50, side:true, image:'foam-hamstrings' },
+    { name:'Rodillo — glúteo/piriforme', instruction:'Sentado en rodillo. Cruza tobillo sobre rodilla. Inclínate hacia ese lado.',
+      tips:['El lado del tobillo cruzado es el que trabajas','Gira levemente para buscar tensión'],
+      duration:50, side:true, image:'foam-glute' },
+    { name:'Rodillo — columna torácica', instruction:'Espalda media en el rodillo. Rueda lento T4 a T12.',
+      tips:['Pausa 2s en puntos de tensión','Solo zona media — no la lumbar'],
+      duration:70, image:'foam-thoracic' },
+   ]},
+   { name:'Elongación', icon:'🧘', duration:7, exercises:[
+    { name:'Estiramiento pectoral en marco', instruction:'Antebrazo en el marco. Gira el cuerpo alejándote. Codo a altura del hombro.',
+      tips:['Siente el pecho, no el hombro','30–40 seg cada lado'],
+      duration:45, side:true, image:'doorway-chest' },
+    { name:'Flexor de cadera en estocada', instruction:'Rodilla trasera en suelo. Cadera hacia adelante. Aprieta glúteo trasero.',
+      tips:['Pelvis neutra: no arquees la lumbar','Este músculo trabaja fuerte en sentadilla y peso muerto'],
+      duration:60, side:true, image:'hip-flexor-lunge' },
+    { name:'Isquiotibiales en pared', instruction:'Acostado. Piernas en la pared. Rodillas rectas. Gravedad estira.',
+      tips:['Glúteo pegado a la pared','Relaja los pies — no es fuerza'],
+      duration:80, image:'wall-hamstring' },
     { name:'Estiramiento dorsal cruzado', instruction:'Brazo cruzando el pecho. El otro codo lo jala suavemente.',
-      tips:['No eleves el hombro del brazo estirado','30–45 segundos cada lado'],
+      tips:['No eleves el hombro del brazo estirado','Trabaja el hombro posterior y el dorsal'],
       duration:45, side:true, image:'cross-body-shoulder' },
-    { name:'Flexor de cadera en estocada', instruction:'Rodilla trasera en suelo. Cadera hacia adelante. Aprieta glúteo.',
-      tips:['Pelvis neutra: no arquees la lumbar'],
-      duration:55, side:true, image:'hip-flexor-lunge' },
     { name:"Child's Pose + respiración", instruction:'Rodillas al suelo, siéntate sobre talones. Brazos al frente. Respira.',
       tips:['Deja que la columna se alargue con cada exhala'],
       duration:75, image:'childs-pose' },
@@ -348,6 +368,34 @@ const SESSIONS_SEED = [
     { name:'Caminata a paso ligero', instruction:'10 minutos de caminata continua a paso rápido pero cómodo. Mueve los brazos activamente.',
       tips:['Moviliza los ácidos grasos liberados durante el HIIT','No pares de golpe — la caminata acelera la recuperación','Respira profundo y rítmico'],
       duration:600, image:'hiit-walk' },
+   ]},
+   { name:'Foam Roller', icon:'🪵', duration:7, exercises:[
+    { name:'Rodillo — cuádriceps', instruction:'Boca abajo. Rodillo bajo el muslo. Rueda de cadera a rodilla.',
+      tips:['Rota la pierna para cubrir todo el tejido','Pausa en zonas de tensión'],
+      duration:50, side:true, image:'foam-quads' },
+    { name:'Rodillo — isquiotibiales', instruction:'Rodillo bajo los isquios. Rueda lento hasta la rodilla.',
+      tips:['Deja que el peso corporal haga el trabajo','Pausa en puntos tensos'],
+      duration:50, side:true, image:'foam-hamstrings' },
+    { name:'Rodillo — gemelos y sóleos', instruction:'Pantorrilla en rodillo. Rueda de talón a rodilla. Gira el pie.',
+      tips:['Cruza una pierna encima para más presión','Gira hacia adentro y afuera para cubrir todo el tejido'],
+      duration:50, side:true, image:'foam-calves' },
+    { name:'Rodillo — banda IT / muslo lateral', instruction:'De lado. Rodillo de cadera a rodilla por el lateral.',
+      tips:['Es incómodo — es normal','No ruedes sobre la articulación de la rodilla'],
+      duration:50, side:true, image:'foam-it-band' },
+   ]},
+   { name:'Elongación', icon:'🧘', duration:6, exercises:[
+    { name:'Flexor de cadera en estocada', instruction:'Rodilla trasera en suelo. Cadera hacia adelante. Aprieta glúteo.',
+      tips:['Pelvis neutra: no arquees la lumbar','Trabaja fuerte en el sprint'],
+      duration:60, side:true, image:'hip-flexor-lunge' },
+    { name:'Isquiotibiales en pared', instruction:'Acostado. Piernas en la pared. Rodillas rectas. Gravedad estira.',
+      tips:['Glúteo pegado a la pared','Relaja los pies — no es fuerza'],
+      duration:80, image:'wall-hamstring' },
+    { name:'Figura 4 acostado', instruction:'Tobillo sobre rodilla opuesta. Jala suave hacia ti. Respira.',
+      tips:['Cada exhala permite más profundidad','Trabaja glúteo y piriforme'],
+      duration:60, side:true, image:'figure-4' },
+    { name:"Child's Pose + respiración", instruction:'Rodillas al suelo, siéntate sobre talones. Brazos al frente. Respira.',
+      tips:['Deja que la columna se alargue con cada exhala'],
+      duration:75, image:'childs-pose' },
    ]},
   ]
  },
@@ -393,12 +441,23 @@ const SESSIONS_SEED = [
       tips:['Los codos no se mueven — sólo el antebrazo','Completa la extensión para activar toda la cabeza larga','Descansa 60s tras completar la superserie'],
       duration:35, sets:4, reps:'12', rest:60, tracked:true, image:'tricep-extension' },
    ]},
-   { name:'Cool Down', icon:'🌊', duration:6, exercises:[
-    { name:'Estiramiento pectoral en marco', instruction:'Antebrazo en el marco. Gira el cuerpo alejándote.',
-      tips:['El codo a altura del hombro','Siente el estiramiento en el pecho, no en el hombro'],
-      duration:45, side:true, image:'doorway-chest' },
+   { name:'Foam Roller', icon:'🪵', duration:6, exercises:[
+    { name:'Rodillo — columna torácica', instruction:'Espalda media en el rodillo. Rueda lento T4 a T12. Trabaja el dorsal y romboides usados en remos.',
+      tips:['Pausa 2s en puntos de tensión','Solo zona media — no la lumbar','Brazos cruzados al pecho'],
+      duration:70, image:'foam-thoracic' },
+    { name:'Rodillo — cuádriceps', instruction:'Boca abajo. Rodillo bajo el muslo. Rueda de cadera a rodilla.',
+      tips:['Rota la pierna para cubrir todo el tejido','Pausa en zonas de tensión'],
+      duration:50, side:true, image:'foam-quads' },
+   ]},
+   { name:'Elongación', icon:'🧘', duration:8, exercises:[
+    { name:'Estiramiento pectoral en marco', instruction:'Antebrazo en el marco. Gira el cuerpo alejándote. Codo a altura del hombro.',
+      tips:['Siente el pecho superior y el hombro anterior','30–40 seg cada lado'],
+      duration:50, side:true, image:'doorway-chest' },
     { name:'Estiramiento dorsal cruzado', instruction:'Brazo cruzando el pecho. El otro codo lo jala suavemente.',
-      tips:['No eleves el hombro del brazo estirado'],
+      tips:['No eleves el hombro del brazo estirado','Trabaja el hombro posterior y el dorsal'],
+      duration:50, side:true, image:'cross-body-shoulder' },
+    { name:'Estiramiento de tríceps sobre la cabeza', instruction:'Codo doblado sobre la cabeza, mano cae a la espalda. La mano opuesta empuja suavemente el codo hacia atrás.',
+      tips:['Cuello neutral','Siente la parte posterior del brazo y el costado'],
       duration:45, side:true, image:'cross-body-shoulder' },
     { name:"Child's Pose + respiración", instruction:'Rodillas al suelo, siéntate sobre talones. Brazos al frente. Respira.',
       tips:['Columna se alarga con cada exhala'],
@@ -666,7 +725,7 @@ function renderVisual(ex, accent, compact=false){
 }
 
 // ─── STORAGE ───────────────────────────────────────────────────────────────────
-const WK='gt_weights_v3', HK='gt_history_v3', SK='gt_sessions_v5', DK='gt_dark_v1'
+const WK='gt_weights_v3', HK='gt_history_v3', SK='gt_sessions_v5', DK='gt_dark_v1', DAY_K='gt_days_v1'
 function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } }
 function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)) }catch{} }
 function getSessions(){ return lsGet(SK) || SESSIONS_SEED }
@@ -674,8 +733,14 @@ function saveSessionById(sess){ const all=getSessions().map(s=>s.id===sess.id?se
 function getWeight(n){ const d=lsGet(WK)||{}; return d[n]||null }
 function logWeight(n,e){ const d=lsGet(WK)||{}; d[n]={...e,date:new Date().toISOString().slice(0,10)}; lsSet(WK,d) }
 function weekKey(){ const d=new Date(),day=d.getDay()||7,m=new Date(d); m.setDate(d.getDate()-day+1); return m.toISOString().slice(0,10) }
+function todayKey(){ return new Date().toISOString().slice(0,10) }
 function completedThisWeek(){ return (lsGet(HK)||{})[weekKey()]||[] }
-function markDone(id){ const h=lsGet(HK)||{},w=weekKey(); if(!h[w])h[w]=[]; if(!h[w].includes(id))h[w].push(id); lsSet(HK,h) }
+function markDone(id){
+ const h=lsGet(HK)||{},w=weekKey(); if(!h[w])h[w]=[]; if(!h[w].includes(id))h[w].push(id); lsSet(HK,h)
+ const dy=lsGet(DAY_K)||{},t=todayKey(); if(!dy[t])dy[t]=[]; if(!dy[t].includes(id))dy[t].push(id); lsSet(DAY_K,dy)
+}
+function getDayDone(dateKey){ return (lsGet(DAY_K)||{})[dateKey]||[] }
+function getWeekDays(){ const days=[],today=new Date(),dow=today.getDay()||7,mon=new Date(today); mon.setDate(today.getDate()-dow+1); for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d.toISOString().slice(0,10))} return days }
 
 // ─── THEME ─────────────────────────────────────────────────────────────────────
 let darkMode = (()=>{ const v=lsGet(DK); return v!==null?v:true })()
@@ -887,8 +952,11 @@ function addEx(bi){
  render()
 }
 function updateExField(bi,ei,field,value){
- if(field==='duration') state.editData.blocks[bi].exercises[ei].duration=Number(value)||0
- else state.editData.blocks[bi].exercises[ei][field]=value
+ const ex=state.editData.blocks[bi].exercises[ei]
+ if(field==='duration') ex.duration=Number(value)||0
+ else if(field==='sets') ex.sets=Number(value)||1
+ else if(field==='rest') ex.rest=value===''?undefined:Number(value)||0
+ else ex[field]=value
 }
 function openImagePicker(bi,ei){ state.editImagePicker={bi,ei}; render() }
 function selectImage(name){
@@ -923,6 +991,33 @@ function renderHome(){
     style="background:var(--s2);border-color:var(--b2);color:var(--t1)">
     ${darkMode?'☀':'◑'}
    </button>
+  </div>
+  <div class="px-4 mb-4">
+   <div class="flex gap-1">${(()=>{
+    const allS=getSessions(),wdays=getWeekDays(),tk=todayKey()
+    const dnames=['L','M','X','J','V','S','D']
+    return wdays.map((dk,i)=>{
+     const dayNum=parseInt(dk.slice(8))
+     const isToday=dk===tk
+     const doneIds=getDayDone(dk)
+     const sess=doneIds.length?allS.find(s=>s.id===doneIds[0]):null
+     if(sess){
+      const c2=ACCENT[sess.accent]
+      return `<div class="flex-1 rounded-xl py-1.5 text-center" style="background:var(--s2);border:1px solid ${c2.ring}55">
+       <p class="text-[0.5rem] font-bold" style="color:${c2.ring}">${dnames[i]}</p>
+       <p class="text-[0.62rem] font-black tabular-nums" style="color:var(--t1)">${dayNum}</p>
+       <p class="text-lg leading-none">${sess.emoji}</p>
+       <p class="text-[0.42rem] font-bold truncate px-0.5" style="color:${c2.ring}">${sess.name.split(' ')[0]}</p>
+      </div>`
+     }
+     return `<div class="flex-1 rounded-xl py-1.5 text-center border" style="background:var(--s2);border-color:${isToday?'var(--b1)':'transparent'}">
+      <p class="text-[0.5rem] font-semibold" style="color:${isToday?'var(--t2)':'var(--t4)'}">${dnames[i]}</p>
+      <p class="text-[0.62rem] font-black tabular-nums" style="color:${isToday?'var(--t0)':'var(--t4)'}">${dayNum}</p>
+      <p class="text-lg leading-none opacity-10">·</p>
+      <p class="text-[0.42rem]"> </p>
+     </div>`
+    }).join('')
+   })()}</div>
   </div>
   <div class="flex gap-0 px-4 mb-5" style="border-bottom:1px solid var(--b2)">
    ${CATS.map(cat=>`
@@ -1372,6 +1467,29 @@ function renderEdit(){
            </button>
           </div>
          </div>
+         <div class="flex gap-2">
+          <div class="flex-1">
+           <label class="text-xs mb-1 block" style="color:var(--t2)">Series</label>
+           <input type="number" value="${ex.sets||1}" min="1" inputmode="numeric"
+            class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
+            style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+            data-action="ex-field" data-field="sets" data-bi="${bi}" data-ei="${ei}"/>
+          </div>
+          <div class="flex-1">
+           <label class="text-xs mb-1 block" style="color:var(--t2)">Reps</label>
+           <input type="text" value="${esc(ex.reps||'')}" placeholder="12 ó 8-12"
+            class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
+            style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+            data-action="ex-field" data-field="reps" data-bi="${bi}" data-ei="${ei}"/>
+          </div>
+          <div class="flex-1">
+           <label class="text-xs mb-1 block" style="color:var(--t2)">Desc (seg)</label>
+           <input type="number" value="${ex.rest||''}" min="0" placeholder="90" inputmode="numeric"
+            class="w-full rounded-xl px-3 py-2.5 text-sm border focus:outline-none"
+            style="background:var(--s2);color:var(--t0);border-color:var(--b2)"
+            data-action="ex-field" data-field="rest" data-bi="${bi}" data-ei="${ei}"/>
+          </div>
+         </div>
         </div>`:''}
        </div>`
       }).join('')}
@@ -1426,7 +1544,8 @@ function renderWeightModal(){
    <h3 class="text-base font-bold mb-0.5" style="color:var(--t0)">Registrar carga</h3>
    <p class="text-xs mb-4" style="color:var(--t3)">${esc(state.pendingEx||'')}</p>
    <div class="flex gap-2 mb-4">
-    <input id="wt-n" type="number" inputmode="decimal" placeholder="20" value="${esc(wf.weight)}"
+    <input id="wt-n" type="text" inputmode="decimal" pattern="[0-9.]*" placeholder="20" value="${esc(wf.weight)}"
+     data-action="wt-input"
      class="flex-1 rounded-xl px-4 py-3 text-2xl font-bold border focus:outline-none"
      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
     <div class="flex rounded-xl overflow-hidden border" style="border-color:var(--b2)">
@@ -1796,6 +1915,7 @@ function bindEvents(){
    else if(a==='coach')      toggleCoach()
    else if(a==='coach-close'||a==='coach-close-bg') { if(a==='coach-close-bg'&&e.target!==el) return; state.showCoach=false; render() }
    else if(a==='weight')      openWeightModal(el.dataset.name)
+   else if(a==='wt-input')    state.wf.weight=el.value
    else if(a==='close-weight'||a==='close-weight-bg') closeWeightModal()
    else if(a==='save-wt')     saveWeightEntry()
    else if(a==='wt-u-kg')     { captureWtInput(); state.wf.unit='kg';  render() }
