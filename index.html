@@ -732,15 +732,16 @@ function getSessions(){ return lsGet(SK) || SESSIONS_SEED }
 function saveSessionById(sess){ const all=getSessions().map(s=>s.id===sess.id?sess:s); lsSet(SK,all) }
 function getWeight(n){ const d=lsGet(WK)||{}; return d[n]||null }
 function logWeight(n,e){ const d=lsGet(WK)||{}; d[n]={...e,date:new Date().toISOString().slice(0,10)}; lsSet(WK,d) }
-function weekKey(){ const d=new Date(),day=d.getDay()||7,m=new Date(d); m.setDate(d.getDate()-day+1); return m.toISOString().slice(0,10) }
-function todayKey(){ return new Date().toISOString().slice(0,10) }
+function weekKey(){ const d=new Date(),day=d.getDay()||7,m=new Date(d); m.setDate(d.getDate()-day+1); return localKey(m) }
+function localKey(d){ const dt=d||new Date(); const y=dt.getFullYear(),m=String(dt.getMonth()+1).padStart(2,'0'),da=String(dt.getDate()).padStart(2,'0'); return `${y}-${m}-${da}` }
+function todayKey(){ return localKey() }
 function completedThisWeek(){ return (lsGet(HK)||{})[weekKey()]||[] }
 function markDone(id){
  const h=lsGet(HK)||{},w=weekKey(); if(!h[w])h[w]=[]; if(!h[w].includes(id))h[w].push(id); lsSet(HK,h)
  const dy=lsGet(DAY_K)||{},t=todayKey(); if(!dy[t])dy[t]=[]; if(!dy[t].includes(id))dy[t].push(id); lsSet(DAY_K,dy)
 }
 function getDayDone(dateKey){ return (lsGet(DAY_K)||{})[dateKey]||[] }
-function getWeekDays(){ const days=[],today=new Date(),dow=today.getDay()||7,mon=new Date(today); mon.setDate(today.getDate()-dow+1); for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d.toISOString().slice(0,10))} return days }
+function getWeekDays(){ const days=[],today=new Date(),dow=today.getDay()||7,mon=new Date(today); mon.setDate(today.getDate()-dow+1); for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(localKey(d))} return days }
 
 // ─── THEME ─────────────────────────────────────────────────────────────────────
 let darkMode = (()=>{ const v=lsGet(DK); return v!==null?v:true })()
@@ -1033,6 +1034,8 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;
 function renderHome(){
  const done=completedThisWeek()
  const sessions=getSessions().filter(s=>s.category===state.cat)
+ const allS=getSessions()
+ const todayDone=getDayDone(todayKey()).map(id=>allS.find(s=>s.id===id)).filter(Boolean)
  return `
  <div class="min-h-screen pb-10 fade" style="background:var(--bg)">
   <div class="px-5 pt-12 pb-4 flex items-start justify-between">
@@ -1046,6 +1049,17 @@ function renderHome(){
     ${darkMode?'☀':'◑'}
    </button>
   </div>
+  ${todayDone.length?`
+  <div class="px-4 mb-3">
+   ${todayDone.map(s=>{const cc=ACCENT[s.accent]; return `
+    <div class="rounded-2xl p-3 flex items-center gap-3 border" style="background:var(--s1);border-color:${cc.ring}66">
+     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl ${cc.bg} ${cc.border} border">${s.emoji}</div>
+     <div class="flex-1 min-w-0">
+      <p class="text-[0.55rem] font-black uppercase tracking-widest" style="color:${cc.ring}">✓ Hoy hiciste</p>
+      <p class="text-sm font-bold truncate" style="color:var(--t0)">${esc(s.name)}</p>
+     </div>
+    </div>`}).join('')}
+  </div>`:''}
   <div class="px-4 mb-4">
    <div class="flex gap-1">${(()=>{
     const allS=getSessions(),wdays=getWeekDays(),tk=todayKey()
