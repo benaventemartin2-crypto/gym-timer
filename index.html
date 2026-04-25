@@ -758,8 +758,8 @@ function buildQueue(session){
  session.blocks.forEach((blk,bi)=>{
   q.push({ type:'section', name:blk.name, icon:blk.icon,
    instruction:`${blk.exercises.length} ejercicios · ~${blk.duration} min`, duration:3, bi })
-  blk.exercises.forEach(ex=>{
-   const base={...ex, bi, blockName:blk.name}
+  blk.exercises.forEach((ex,ei)=>{
+   const base={...ex, bi, ei, blockName:blk.name}
    const totalSets=ex.sets||1
    for(let s=0;s<totalSets;s++){
     const si=totalSets>1?{setNum:s+1,totalSets}:{}
@@ -787,7 +787,7 @@ let state = {
  queue:[], qIndex:0, timeLeft:0, itemDuration:0,
  isRunning:false, wasRunning:false,
  phase:'preview', countdownVal:3,
- showWeight:false, pendingEx:null,
+ showWeight:false, pendingEx:null, pendingBi:null, pendingEi:null,
  wf:{ weight:'', unit:'kg', tool:'mancuernas', rpe:'medio' },
  showCoach:false,
  editSessionId:null, editData:null, editExpanded:null, editImagePicker:null, editError:null,
@@ -888,17 +888,40 @@ function restart(){
 function goHome(){ stopTimer(); wakeLock?.release(); state.screen='home'; state.isRunning=false; render() }
 function goSession(){ state.isRunning=false; state.screen='session'; render() }
 function setCat(c){ state.cat=c; render() }
-function openWeightModal(name){
+function openWeightModal(name,bi,ei){
  const ex=getWeight(name)
  state.pendingEx=name
+ state.pendingBi=(bi===undefined||bi===null||bi==='')?null:+bi
+ state.pendingEi=(ei===undefined||ei===null||ei==='')?null:+ei
  state.wf=ex?{weight:ex.weight,unit:ex.unit||'kg',tool:ex.tool||'mancuernas',rpe:ex.rpe||'medio'}:{weight:'',unit:'kg',tool:'mancuernas',rpe:'medio'}
  state.wasRunning=state.isRunning; state.isRunning=false
  state.showWeight=true; render()
 }
 function closeWeightModal(){
+ const hadEdit=state.pendingBi!==null
  state.showWeight=false; state.pendingEx=null
+ state.pendingBi=null; state.pendingEi=null
+ if(hadEdit&&state.screen==='workout'&&state.queue?.length) rebuildQueueKeepingPosition()
  if(state.wasRunning) state.isRunning=true
  render()
+}
+function rebuildQueueKeepingPosition(){
+ const sess=getSessions().find(s=>s.id===state.sessionId)
+ if(!sess) return
+ const cur=state.queue[state.qIndex]
+ const newQ=buildQueue(sess)
+ let idx=-1
+ if(cur){
+  idx=newQ.findIndex(it=>it.type===cur.type&&it.bi===cur.bi&&it.ei===cur.ei&&(it.setNum||0)===(cur.setNum||0)&&(it.sideLabel||'')===(cur.sideLabel||''))
+  if(idx<0) idx=newQ.findIndex(it=>it.type==='exercise'&&it.bi===cur.bi&&it.ei===cur.ei)
+  if(idx<0) idx=Math.min(state.qIndex,newQ.length-1)
+ }
+ state.queue=newQ
+ if(idx>=0){
+  state.qIndex=idx
+  const ni=newQ[idx]
+  if(ni&&state.timeLeft>ni.duration){ state.timeLeft=ni.duration; state.itemDuration=ni.duration }
+ }
 }
 function captureWtInput(){ const el=document.getElementById('wt-n'); if(el) state.wf.weight=el.value }
 function saveWeightEntry(){ captureWtInput(); if(state.pendingEx) logWeight(state.pendingEx,{...state.wf}); closeWeightModal() }
@@ -1324,21 +1347,13 @@ function renderActive(cur,c,session,curNum,total,pct){
    </div>
   </div>
 
-  ${wt?`
+  ${cur?.type==='exercise'&&cur?.ei!==undefined?`
   <div class="mx-4 mb-1 flex-shrink-0">
-   <button data-action="weight" data-name="${encName}"
+   <button data-action="weight" data-name="${encName}" data-bi="${cur.bi}" data-ei="${cur.ei}"
     class="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-2 border"
     style="background:var(--s1);border-color:var(--b2)">
-    <span class="text-xs font-bold ${c.text}">${wt.weight}${wt.unit}</span>
-    ${wt.tool?`<span class="text-xs" style="color:var(--t3)">· ${esc(wt.tool)}</span>`:''}
-    <span class="text-xs" style="color:var(--t3)">✎</span>
-   </button>
-  </div>`:cur?.tracked?`
-  <div class="mx-4 mb-1 flex-shrink-0">
-   <button data-action="weight" data-name="${encName}"
-    class="w-full flex items-center justify-center rounded-xl px-4 py-2 border"
-    style="background:var(--s1);border-color:var(--b2)">
-    <span class="text-xs" style="color:var(--t2)">+ Registrar carga</span>
+    ${wt?`<span class="text-xs font-bold ${c.text}">${wt.weight}${wt.unit}</span>${wt.tool?`<span class="text-xs" style="color:var(--t3)">· ${esc(wt.tool)}</span>`:''}<span class="text-xs" style="color:var(--t3)">·</span>`:''}
+    <span class="text-xs" style="color:var(--t2)">✎ Editar series · reps · peso</span>
    </button>
   </div>`:''}
 
@@ -1549,12 +1564,40 @@ function renderWeightModal(){
  const wf=state.wf
  const tools=['mancuernas','barra','máquina','banda','peso corporal']
  const rpes=[['fácil','😌'],['medio','💪'],['pesado','🔥']]
+ const hasEx=state.pendingBi!==null&&state.pendingEi!==null
+ const sess=hasEx?getSessions().find(s=>s.id===state.sessionId):null
+ const ex=hasEx&&sess?sess.blocks[state.pendingBi]?.exercises[state.pendingEi]:null
  return `
  <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.75)" data-action="close-weight-bg">
-  <div class="w-full rounded-t-3xl p-5 s-up border-t" style="background:var(--s1);border-color:var(--b2)" id="wt-modal">
+  <div class="w-full rounded-t-3xl p-5 s-up border-t overflow-y-auto max-h-[92vh]" style="background:var(--s1);border-color:var(--b2)" id="wt-modal">
    <div class="w-10 h-1 rounded-full mx-auto mb-5" style="background:var(--t4)"></div>
-   <h3 class="text-base font-bold mb-0.5" style="color:var(--t0)">Registrar carga</h3>
+   <h3 class="text-base font-bold mb-0.5" style="color:var(--t0)">Editar ejercicio</h3>
    <p class="text-xs mb-4" style="color:var(--t3)">${esc(state.pendingEx||'')}</p>
+   ${ex?`
+   <div class="flex gap-2 mb-4">
+    <div class="flex-1">
+     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Series</label>
+     <input type="number" min="1" inputmode="numeric" value="${ex.sets||1}"
+      data-action="ls-ex-field" data-field="sets" data-bi="${state.pendingBi}" data-ei="${state.pendingEi}"
+      class="w-full rounded-xl px-3 py-2.5 text-sm font-bold border focus:outline-none"
+      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
+    </div>
+    <div class="flex-1">
+     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Reps</label>
+     <input type="text" inputmode="text" placeholder="12 ó 8-12" value="${esc(ex.reps||'')}"
+      data-action="ls-ex-field" data-field="reps" data-bi="${state.pendingBi}" data-ei="${state.pendingEi}"
+      class="w-full rounded-xl px-3 py-2.5 text-sm font-bold border focus:outline-none"
+      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
+    </div>
+    <div class="flex-1">
+     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Desc (s)</label>
+     <input type="number" min="0" inputmode="numeric" placeholder="90" value="${ex.rest??''}"
+      data-action="ls-ex-field" data-field="rest" data-bi="${state.pendingBi}" data-ei="${state.pendingEi}"
+      class="w-full rounded-xl px-3 py-2.5 text-sm font-bold border focus:outline-none"
+      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
+    </div>
+   </div>
+   <p class="text-[0.6rem] uppercase tracking-wider mb-2" style="color:var(--t3)">Carga</p>`:''}
    <div class="flex gap-2 mb-4">
     <input id="wt-n" type="text" inputmode="decimal" pattern="[0-9.]*" placeholder="20" value="${esc(wf.weight)}"
      data-action="wt-input"
@@ -1729,7 +1772,7 @@ function renderListModal(){
    </div>
    ${meta.feel?`<div class="rounded-xl px-3 py-2.5 mb-3 border-l-2" style="background:var(--bg);border-color:${c.ring}"><p class="text-xs font-semibold mb-0.5" style="color:${c.ring}">Dónde sentirlo</p><p class="text-xs" style="color:var(--t1)">${esc(meta.feel)}</p></div>`:''}
    ${ex.tips?.length?`<div class="flex flex-col gap-1.5 mb-3">${ex.tips.map(t=>`<div class="rounded-lg px-3 py-2 border" style="background:var(--bg);border-color:var(--b2)"><span class="text-xs" style="color:var(--t2)">· ${esc(t)}</span></div>`).join('')}</div>`:''}
-   ${ex.tracked?`<button data-action="weight" data-name="${esc(ex.name)}" class="w-full py-2.5 rounded-xl text-sm font-semibold border mb-2" style="background:var(--bg);border-color:var(--b2);color:var(--t2)">${wt?`🏋️ ${wt.weight}${wt.unit} · ${wt.tool}`:'🏋️ Registrar peso'}</button>`:''}
+   ${ex.tracked?`<button data-action="weight" data-name="${esc(ex.name)}" data-bi="${bi}" data-ei="${ei}" class="w-full py-2.5 rounded-xl text-sm font-semibold border mb-2" style="background:var(--bg);border-color:var(--b2);color:var(--t2)">${wt?`🏋️ ${wt.weight}${wt.unit} · ${wt.tool}`:'🏋️ Registrar peso'}</button>`:''}
    ${isStretchEx(ex)&&!done?`
    <button data-action="list-start-stretch" data-bi="${bi}" data-ei="${ei}"
     class="w-full py-4 rounded-2xl font-bold text-sm text-white mt-1 ${c.btn}">
@@ -1952,7 +1995,7 @@ function bindEvents(){
    else if(a==='toggle-dark') toggleDark()
    else if(a==='coach')      toggleCoach()
    else if(a==='coach-close'||a==='coach-close-bg') { if(a==='coach-close-bg'&&e.target!==el) return; state.showCoach=false; render() }
-   else if(a==='weight')      openWeightModal(el.dataset.name)
+   else if(a==='weight')      openWeightModal(el.dataset.name,el.dataset.bi,el.dataset.ei)
    else if(a==='wt-input')    state.wf.weight=el.value
    else if(a==='close-weight'||a==='close-weight-bg') closeWeightModal()
    else if(a==='save-wt')     saveWeightEntry()
