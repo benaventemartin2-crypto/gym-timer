@@ -993,6 +993,25 @@ function updateSessionExField(bi,ei,field,value){
   state.listActiveEx={bi,ei,ex:sess.blocks[bi].exercises[ei]}
  }
 }
+function bumpSessionExField(bi,ei,field,delta){
+ const sess=getSessions().find(s=>s.id===state.sessionId)
+ if(!sess) return
+ const ex=sess.blocks[bi].exercises[ei]
+ if(field==='sets'){
+  ex.sets=Math.max(1,(ex.sets||1)+delta)
+ } else if(field==='reps'){
+  const cur=parseInt(ex.reps,10)||0
+  ex.reps=String(Math.max(1,cur+delta))
+ } else if(field==='rest'){
+  ex.rest=Math.max(0,(ex.rest||0)+delta)
+ }
+ saveSessionById(sess)
+ if(state.listActiveEx&&state.listActiveEx.bi===bi&&state.listActiveEx.ei===ei){
+  state.listActiveEx={bi,ei,ex:sess.blocks[bi].exercises[ei]}
+ }
+ if(state.screen==='workout'&&state.queue?.length) rebuildQueueKeepingPosition()
+ render()
+}
 function openImagePicker(bi,ei){ state.editImagePicker={bi,ei}; render() }
 function selectImage(name){
  const {bi,ei}=state.editImagePicker
@@ -1574,28 +1593,10 @@ function renderWeightModal(){
    <h3 class="text-base font-bold mb-0.5" style="color:var(--t0)">Editar ejercicio</h3>
    <p class="text-xs mb-4" style="color:var(--t3)">${esc(state.pendingEx||'')}</p>
    ${ex?`
-   <div class="flex gap-2 mb-4">
-    <div class="flex-1">
-     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Series</label>
-     <input type="number" min="1" inputmode="numeric" value="${ex.sets||1}"
-      data-action="ls-ex-field" data-field="sets" data-bi="${state.pendingBi}" data-ei="${state.pendingEi}"
-      class="w-full rounded-xl px-3 py-2.5 text-sm font-bold border focus:outline-none"
-      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
-    </div>
-    <div class="flex-1">
-     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Reps</label>
-     <input type="text" inputmode="text" placeholder="12 ó 8-12" value="${esc(ex.reps||'')}"
-      data-action="ls-ex-field" data-field="reps" data-bi="${state.pendingBi}" data-ei="${state.pendingEi}"
-      class="w-full rounded-xl px-3 py-2.5 text-sm font-bold border focus:outline-none"
-      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
-    </div>
-    <div class="flex-1">
-     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Desc (s)</label>
-     <input type="number" min="0" inputmode="numeric" placeholder="90" value="${ex.rest??''}"
-      data-action="ls-ex-field" data-field="rest" data-bi="${state.pendingBi}" data-ei="${state.pendingEi}"
-      class="w-full rounded-xl px-3 py-2.5 text-sm font-bold border focus:outline-none"
-      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
-    </div>
+   <div class="grid grid-cols-3 gap-2 mb-4">
+    ${stepper('Series',ex.sets||1,'sets',state.pendingBi,state.pendingEi,1)}
+    ${stepper('Reps',ex.reps||'12','reps',state.pendingBi,state.pendingEi,1)}
+    ${stepper('Desc',ex.rest??90,'rest',state.pendingBi,state.pendingEi,15,'s')}
    </div>
    <p class="text-[0.6rem] uppercase tracking-wider mb-2" style="color:var(--t3)">Carga</p>`:''}
    <div class="flex gap-2 mb-4">
@@ -1723,6 +1724,20 @@ function renderListMain(){
  </div>`
 }
 
+function stepper(label,value,field,bi,ei,step,suffix){
+ const sfx=suffix||''
+ return `
+ <div class="rounded-xl border p-2" style="background:var(--s2);border-color:var(--b2)">
+  <p class="text-[0.6rem] uppercase tracking-wider mb-1 text-center" style="color:var(--t3)">${label}</p>
+  <div class="flex items-center justify-between gap-1">
+   <button data-action="ls-bump" data-field="${field}" data-bi="${bi}" data-ei="${ei}" data-delta="${-step}"
+    class="w-8 h-8 rounded-lg text-base font-bold border" style="background:var(--s1);color:var(--t0);border-color:var(--b2)">−</button>
+   <span class="text-sm font-black tabular-nums text-center flex-1" style="color:var(--t0)">${esc(String(value))}${sfx}</span>
+   <button data-action="ls-bump" data-field="${field}" data-bi="${bi}" data-ei="${ei}" data-delta="${step}"
+    class="w-8 h-8 rounded-lg text-base font-bold border" style="background:var(--s1);color:var(--t0);border-color:var(--b2)">+</button>
+  </div>
+ </div>`
+}
 function renderListModal(){
  const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
  const {ex,bi,ei}=state.listActiveEx
@@ -1741,28 +1756,10 @@ function renderListModal(){
    <h2 class="text-2xl font-black mt-3 mb-1" style="color:var(--t0)">${esc(ex.name)}</h2>
    <p class="text-sm leading-relaxed mb-3" style="color:var(--t1)">${esc(ex.instruction)}</p>
    ${!stretch?`
-   <div class="flex gap-2 mb-3">
-    <div class="flex-1">
-     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Series</label>
-     <input type="number" min="1" inputmode="numeric" value="${ex.sets||1}"
-      data-action="ls-ex-field" data-field="sets" data-bi="${bi}" data-ei="${ei}"
-      class="w-full rounded-xl px-3 py-2 text-sm font-bold border focus:outline-none"
-      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
-    </div>
-    <div class="flex-1">
-     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Reps</label>
-     <input type="text" inputmode="text" placeholder="12 ó 8-12" value="${esc(ex.reps||'')}"
-      data-action="ls-ex-field" data-field="reps" data-bi="${bi}" data-ei="${ei}"
-      class="w-full rounded-xl px-3 py-2 text-sm font-bold border focus:outline-none"
-      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
-    </div>
-    <div class="flex-1">
-     <label class="text-[0.6rem] uppercase tracking-wider mb-1 block" style="color:var(--t3)">Desc (s)</label>
-     <input type="number" min="0" inputmode="numeric" placeholder="90" value="${ex.rest??''}"
-      data-action="ls-ex-field" data-field="rest" data-bi="${bi}" data-ei="${ei}"
-      class="w-full rounded-xl px-3 py-2 text-sm font-bold border focus:outline-none"
-      style="background:var(--s2);color:var(--t0);border-color:var(--b2)"/>
-    </div>
+   <div class="grid grid-cols-3 gap-2 mb-3">
+    ${stepper('Series',ex.sets||1,'sets',bi,ei,1)}
+    ${stepper('Reps',ex.reps||'12','reps',bi,ei,1)}
+    ${stepper('Desc',ex.rest??90,'rest',bi,ei,15,'s')}
    </div>`:`
    <div class="flex gap-2 flex-wrap mb-3">
     <div class="px-3 py-1 rounded-full text-sm font-bold ${c.badge}">${ex.duration}s</div>
@@ -1912,6 +1909,7 @@ function _listStartInlineTimer(ex,bi,ei,secs,label,autoMark){
  render()
  listRestInterval=setInterval(()=>{
   if(!state.listInlineTimer){ clearInterval(listRestInterval); listRestInterval=null; return }
+  if(state.showWeight) return
   state.listInlineTimer.left--
   if(state.listInlineTimer.left<=0){
    clearInterval(listRestInterval); listRestInterval=null
@@ -2015,6 +2013,7 @@ function bindEvents(){
    else if(a==='ex-add')      addEx(+el.dataset.bi)
    else if(a==='ex-field')    updateExField(+el.dataset.bi,+el.dataset.ei,el.dataset.field,el.value)
    else if(a==='ls-ex-field') updateSessionExField(+el.dataset.bi,+el.dataset.ei,el.dataset.field,el.value)
+   else if(a==='ls-bump')     bumpSessionExField(+el.dataset.bi,+el.dataset.ei,el.dataset.field,+el.dataset.delta)
    else if(a==='img-picker')  openImagePicker(+el.dataset.bi,+el.dataset.ei)
    else if(a==='img-select')  selectImage(el.dataset.img)
    else if(a==='img-picker-close'||a==='img-picker-close-bg') closeImagePicker()
