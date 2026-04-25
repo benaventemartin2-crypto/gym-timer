@@ -726,8 +726,10 @@ let state = {
  wf:{ weight:'', unit:'kg', tool:'mancuernas', rpe:'medio' },
  showCoach:false,
  editSessionId:null, editData:null, editExpanded:null, editImagePicker:null, editError:null,
+ // Lista libre de ejercicios
+ listDone:{}, listPhase:'list', listActiveEx:null, listRestLeft:0, listRestTotal:0,
 }
-let timerInterval=null, wakeLock=null
+let timerInterval=null, wakeLock=null, listRestInterval=null
 
 // ─── TIMER ─────────────────────────────────────────────────────────────────────
 function startTimer(){
@@ -957,6 +959,9 @@ function renderHome(){
 }
 
 // ─── RENDER SESSION ────────────────────────────────────────────────────────────
+function isStrengthSession(session){
+ return session.blocks.some(b=>b.exercises.some(e=>e.sets&&e.sets>1))
+}
 function renderSession(){
  const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
  const isDone=completedThisWeek().includes(session.id)
@@ -992,6 +997,13 @@ function renderSession(){
    <button data-action="start" class="${c.btn} w-full py-5 rounded-2xl text-lg font-bold text-white">
     ${isDone?'Repetir sesión':'Iniciar sesión'}
    </button>
+   ${isStrengthSession(session)?`
+   <button data-action="start-list"
+    class="w-full py-4 rounded-2xl text-sm font-semibold border"
+    style="background:var(--s1);border-color:var(--b2);color:var(--t0)">
+    📋 Lista libre de ejercicios
+   </button>
+   `:''}
    <button data-action="edit-open" data-id="${session.id}"
     class="w-full py-3.5 rounded-2xl text-sm font-semibold border"
     style="background:var(--s1);border-color:var(--b2);color:var(--t2)">
@@ -1434,6 +1446,151 @@ function renderWeightModal(){
  </div>`
 }
 
+// ─── RENDER WORKOUT LIST ───────────────────────────────────────────────────────
+function renderWorkoutList(){
+ if(state.listPhase==='rest') return renderListRest()
+ const base=renderListMain()
+ if(state.listPhase==='modal') return base+renderListModal()
+ return base
+}
+
+function renderListMain(){
+ const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
+ const allEx=session.blocks.flatMap(b=>b.exercises)
+ const totalEx=allEx.length
+ const doneCount=Object.keys(state.listDone).filter(k=>state.listDone[k]).length
+ const pct=totalEx>0?(doneCount/totalEx)*100:0
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center justify-between px-4 pt-5 pb-2 flex-shrink-0">
+   <button data-action="session" class="text-sm py-1 pr-4" style="color:var(--t2)">← ${esc(session.name)}</button>
+   <span class="text-xs tabular-nums" style="color:var(--t3)">${doneCount}/${totalEx} hechos</span>
+  </div>
+  ${progressBar(pct,c)}
+  <div class="flex-1 overflow-y-auto px-4 pb-4 pt-2">
+   ${session.blocks.map((blk,bi)=>`
+    <p class="text-[0.6rem] font-black uppercase tracking-widest mt-4 mb-2 flex items-center gap-1.5" style="color:var(--t3)">
+     <span>${blk.icon}</span><span>${esc(blk.name)}</span>
+    </p>
+    ${blk.exercises.map((ex,ei)=>{
+     const key=`${ex.name}|${bi}|${ei}`
+     const done=!!state.listDone[key]
+     const label=ex.reps
+      ?(ex.sets&&ex.sets>1?`${ex.sets} series · ${ex.reps} reps`:`${ex.reps} reps`)
+      :`${ex.duration}s`
+     const restLabel=ex.rest?` · ${ex.rest}s descanso`:''
+     return `
+     <button data-action="list-tap" data-bi="${bi}" data-ei="${ei}"
+      class="w-full rounded-2xl p-3 flex items-center gap-3 border mb-2 text-left transition-opacity ${done?'opacity-50':''}"
+      style="background:var(--s1);border-color:${done?'transparent':'var(--b1)'}">
+      ${renderVisual(ex, session.accent, true)}
+      <div class="flex-1 min-w-0">
+       <p class="text-sm font-bold leading-tight ${done?'line-through':''}" style="color:var(--t0)">${esc(ex.name)}</p>
+       <p class="text-[0.62rem] mt-0.5" style="color:var(--t3)">${label}${restLabel}</p>
+      </div>
+      <div class="w-7 h-7 rounded-full border-2 flex-shrink-0 flex items-center justify-center text-sm font-bold text-white transition-colors
+       ${done?c.btn+' border-transparent':'border-b2'}">
+       ${done?'✓':''}
+      </div>
+     </button>`
+    }).join('')}
+   `).join('')}
+  </div>
+  <div class="px-4 pb-10 pt-2 flex-shrink-0">
+   <button data-action="list-finish"
+    class="w-full py-4 rounded-2xl text-sm font-semibold border ${doneCount===totalEx?c.btn+' text-white border-transparent':'text-t2'}"
+    style="${doneCount===totalEx?'':'background:var(--s1);border-color:var(--b2);color:var(--t2)'}">
+    ${doneCount===totalEx?'🎉 Finalizar sesión':'Terminar ahora'}
+   </button>
+  </div>
+ </div>`
+}
+
+function renderListModal(){
+ const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
+ const {ex,bi,ei}=state.listActiveEx
+ const key=`${ex.name}|${bi}|${ei}`
+ const done=!!state.listDone[key]
+ const meta=getExMeta(ex)
+ const setsReps=ex.sets&&ex.sets>1
+  ?(ex.reps?`${ex.sets} series × ${ex.reps} reps`:`${ex.sets} series × ${ex.duration}s`)
+  :(ex.reps?`${ex.reps} reps`:`${ex.duration}s`)
+ const wt=getWeight(ex.name)
+ return `
+ <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.5)" data-action="list-modal-close-bg">
+  <div class="w-full rounded-t-3xl p-5 overflow-y-auto max-h-[88vh]" style="background:var(--s1)">
+   <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background:var(--b2)"></div>
+   ${renderVisual(ex, session.accent)}
+   <h2 class="text-2xl font-black mt-3 mb-1" style="color:var(--t0)">${esc(ex.name)}</h2>
+   <p class="text-sm leading-relaxed mb-3" style="color:var(--t1)">${esc(ex.instruction)}</p>
+   <div class="flex gap-2 flex-wrap mb-3">
+    <div class="px-3 py-1 rounded-full text-sm font-bold ${c.badge}">${setsReps}</div>
+    ${ex.rest?`<div class="px-3 py-1 rounded-full text-sm font-semibold" style="background:var(--s3);color:var(--t2)">⏸ ${ex.rest}s descanso</div>`:''}
+    ${meta.bodyZone?`<div class="px-3 py-1 rounded-full text-xs font-semibold" style="background:var(--s3);color:var(--t3)">${meta.bodyZone}</div>`:''}
+   </div>
+   ${meta.feel?`<div class="rounded-xl px-3 py-2.5 mb-3 border-l-2" style="background:var(--bg);border-color:${c.ring}"><p class="text-xs font-semibold mb-0.5" style="color:${c.ring}">Dónde sentirlo</p><p class="text-xs" style="color:var(--t1)">${esc(meta.feel)}</p></div>`:''}
+   ${ex.tips?.length?`<div class="flex flex-col gap-1.5 mb-3">${ex.tips.map(t=>`<div class="rounded-lg px-3 py-2 border" style="background:var(--bg);border-color:var(--b2)"><span class="text-xs" style="color:var(--t2)">· ${esc(t)}</span></div>`).join('')}</div>`:''}
+   ${ex.tracked?`<button data-action="weight" data-name="${esc(ex.name)}" class="w-full py-2.5 rounded-xl text-sm font-semibold border mb-2" style="background:var(--bg);border-color:var(--b2);color:var(--t2)">${wt?`🏋️ ${wt.weight}${wt.unit} · ${wt.tool}`:'🏋️ Registrar peso'}</button>`:''}
+   <div class="flex gap-2 mt-1">
+    <button data-action="list-mark-done" data-bi="${bi}" data-ei="${ei}"
+     class="flex-1 py-4 rounded-2xl font-bold text-sm ${done?'border':'text-white '+c.btn}"
+     style="${done?'background:var(--bg);border-color:var(--b2);color:var(--t2)':''}">
+     ${done?'Desmarcar':'✓ Listo'}
+    </button>
+    ${ex.rest&&!done?`
+    <button data-action="list-start-rest" data-bi="${bi}" data-ei="${ei}"
+     class="flex-1 py-4 rounded-2xl font-bold text-sm border"
+     style="background:var(--bg);border-color:var(--b2);color:var(--t1)">
+     ⏸ Descansar ${ex.rest}s
+    </button>`:''}
+   </div>
+   <button data-action="list-modal-close" class="w-full mt-2 py-3 text-sm rounded-xl" style="color:var(--t3)">Cerrar</button>
+  </div>
+ </div>`
+}
+
+function renderListRest(){
+ const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
+ const {ex}=state.listActiveEx||{ex:{name:'',rest:0}}
+ const prog=state.listRestTotal>0?state.listRestLeft/state.listRestTotal:1
+ const offset=(CIRC*(1-prog)).toFixed(1)
+ const isRunning=!!listRestInterval
+ return `
+ <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
+  <div class="flex items-center px-4 pt-5 pb-2 flex-shrink-0">
+   <button data-action="list-rest-skip" class="text-sm py-1 pr-4" style="color:var(--t2)">Saltar →</button>
+  </div>
+  <div class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+   <div class="text-4xl mb-3">⏸</div>
+   <h2 class="text-xl font-bold mb-1" style="color:var(--t1)">Descansando</h2>
+   <p class="text-sm mb-6" style="color:var(--t3)">${esc(ex.name)}</p>
+   <div class="relative w-40 h-40 mb-6">
+    <svg viewBox="0 0 120 120" class="w-40 h-40">
+     <circle cx="60" cy="60" r="52" fill="none" stroke="var(--rt)" stroke-width="5"/>
+     <circle cx="60" cy="60" r="52" fill="none" stroke="${c.ring||'#10b981'}" stroke-width="5"
+      stroke-dasharray="${CIRC}" stroke-dashoffset="${offset}"
+      stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:60px 60px"/>
+    </svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+     <span class="text-[3rem] font-black font-mono leading-none tabular-nums" style="color:var(--t1)">${fmt(state.listRestLeft)}</span>
+     <span class="text-[0.45rem] uppercase tracking-widest mt-1" style="color:var(--t3)">descanso</span>
+    </div>
+   </div>
+  </div>
+  <div class="flex gap-2.5 px-4 pb-10 flex-shrink-0">
+   <button data-action="list-rest-toggle"
+    class="flex-1 h-14 rounded-2xl text-base font-bold border"
+    style="background:var(--s2);color:var(--t0);border-color:var(--b2)">
+    ${isRunning?'Pausar':'Continuar'}
+   </button>
+   <button data-action="list-rest-skip"
+    class="w-24 h-14 rounded-2xl text-sm font-bold ${c.btn} text-white">
+    Saltar →
+   </button>
+  </div>
+ </div>`
+}
+
 // ─── RENDER DONE ───────────────────────────────────────────────────────────────
 function renderDone(){
  const session=getSessions().find(s=>s.id===state.sessionId), c=ACCENT[session.accent]
@@ -1451,14 +1608,91 @@ function renderDone(){
  </div>`
 }
 
+// ─── LISTA LIBRE ───────────────────────────────────────────────────────────────
+function startWorkoutList(){
+ if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
+ state.screen='workout-list'
+ state.listDone={}
+ state.listPhase='list'
+ state.listActiveEx=null
+ state.listRestLeft=0
+ state.listRestTotal=0
+ navigator.wakeLock?.request('screen').then(l=>{wakeLock=l}).catch(()=>{})
+ render()
+}
+function listTap(bi,ei){
+ const session=getSessions().find(s=>s.id===state.sessionId)
+ const ex=session.blocks[bi].exercises[ei]
+ state.listActiveEx={ex,bi,ei}
+ state.listPhase='modal'
+ render()
+}
+function listMarkDone(bi,ei){
+ const session=getSessions().find(s=>s.id===state.sessionId)
+ const ex=session.blocks[bi].exercises[ei]
+ const key=`${ex.name}|${bi}|${ei}`
+ const wasDone=state.listDone[key]
+ state.listDone[key]=!wasDone
+ state.listPhase='list'
+ state.listActiveEx=null
+ if(!wasDone&&ex.rest>0) _listStartRestTimer(ex,bi,ei,ex.rest)
+ else render()
+}
+function listStartRest(bi,ei){
+ const session=getSessions().find(s=>s.id===state.sessionId)
+ const ex=session.blocks[bi].exercises[ei]
+ state.listPhase='list'
+ state.listActiveEx=null
+ _listStartRestTimer(ex,bi,ei,ex.rest)
+}
+function _listStartRestTimer(ex,bi,ei,secs){
+ if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
+ state.listPhase='rest'
+ state.listActiveEx={ex,bi,ei}
+ state.listRestLeft=secs
+ state.listRestTotal=secs
+ render()
+ listRestInterval=setInterval(()=>{
+  state.listRestLeft--
+  if(state.listRestLeft<=0){
+   clearInterval(listRestInterval); listRestInterval=null
+   state.listPhase='list'; state.listActiveEx=null
+   vibe([40,30,40])
+  }
+  render()
+ },1000)
+}
+function listRestSkip(){
+ if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
+ state.listPhase='list'; state.listActiveEx=null
+ render()
+}
+function listRestToggle(){
+ if(listRestInterval){
+  clearInterval(listRestInterval); listRestInterval=null
+ } else {
+  const {ex,bi,ei}=state.listActiveEx
+  _listStartRestTimer(ex,bi,ei,state.listRestLeft)
+ }
+ render()
+}
+function listFinish(){
+ if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
+ state.screen='done'
+ markDone(state.sessionId)
+ vibe([100,50,100,50,300])
+ render()
+}
+
 // ─── RENDER + EVENTS ───────────────────────────────────────────────────────────
 function render(){
  const app=document.getElementById('app')
  if(state.screen==='home')        app.innerHTML=renderHome()
  else if(state.screen==='session') app.innerHTML=renderSession()
- else if(state.screen==='workout') app.innerHTML=renderWorkout()
- else if(state.screen==='edit')    app.innerHTML=renderEdit()
- else if(state.screen==='done')    app.innerHTML=renderDone()
+ else if(state.screen==='workout')      app.innerHTML=renderWorkout()
+ else if(state.screen==='workout-list') app.innerHTML=renderWorkoutList()
+ else if(state.screen==='edit')         app.innerHTML=renderEdit()
+ else if(state.screen==='done')         app.innerHTML=renderDone()
  bindEvents()
 }
 
@@ -1474,6 +1708,14 @@ function bindEvents(){
    else if(a==='session'&&el.dataset.id) selectSession(el.dataset.id)
    else if(a==='session')     goSession()
    else if(a==='start')       startWorkout()
+   else if(a==='start-list')  startWorkoutList()
+   else if(a==='list-tap')    listTap(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-mark-done')  listMarkDone(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-start-rest') listStartRest(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-modal-close'||a==='list-modal-close-bg'){ if(a==='list-modal-close-bg'&&e.target!==el) return; state.listPhase='list'; state.listActiveEx=null; render() }
+   else if(a==='list-rest-skip')   listRestSkip()
+   else if(a==='list-rest-toggle') listRestToggle()
+   else if(a==='list-finish')      listFinish()
    else if(a==='start-ex')    startExercise()
    else if(a==='toggle')      toggleRun()
    else if(a==='next')        goNext()
