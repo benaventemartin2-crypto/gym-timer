@@ -727,7 +727,7 @@ let state = {
  showCoach:false,
  editSessionId:null, editData:null, editExpanded:null, editImagePicker:null, editError:null,
  // Lista libre de ejercicios
- listDone:{}, listPhase:'list', listActiveEx:null, listRestLeft:0, listRestTotal:0,
+ listDone:{}, listPhase:'list', listActiveEx:null, listInlineTimer:null,
 }
 let timerInterval=null, wakeLock=null, listRestInterval=null
 
@@ -1448,7 +1448,6 @@ function renderWeightModal(){
 
 // ─── RENDER WORKOUT LIST ───────────────────────────────────────────────────────
 function renderWorkoutList(){
- if(state.listPhase==='rest') return renderListRest()
  const base=renderListMain()
  if(state.listPhase==='modal') return base+renderListModal()
  return base
@@ -1460,6 +1459,8 @@ function renderListMain(){
  const totalEx=allEx.length
  const doneCount=Object.keys(state.listDone).filter(k=>state.listDone[k]).length
  const pct=totalEx>0?(doneCount/totalEx)*100:0
+ const timer=state.listInlineTimer
+ const CIRC_SM=125.7
  return `
  <div class="min-h-screen flex flex-col fade" style="background:var(--bg)">
   <div class="flex items-center justify-between px-4 pt-5 pb-2 flex-shrink-0">
@@ -1475,10 +1476,42 @@ function renderListMain(){
     ${blk.exercises.map((ex,ei)=>{
      const key=`${ex.name}|${bi}|${ei}`
      const done=!!state.listDone[key]
-     const label=ex.reps
-      ?(ex.sets&&ex.sets>1?`${ex.sets} series · ${ex.reps} reps`:`${ex.reps} reps`)
-      :`${ex.duration}s`
-     const restLabel=ex.rest?` · ${ex.rest}s descanso`:''
+     const isTimer=timer?.key===key
+     const stretch=isStretchEx(ex)
+     if(isTimer){
+      const prog=timer.total>0?timer.left/timer.total:1
+      const offset=(CIRC_SM*(1-prog)).toFixed(1)
+      const running=!!listRestInterval
+      return `
+      <div class="w-full rounded-2xl p-3 flex items-center gap-3 border mb-2"
+       style="background:var(--s2);border-color:${c.ring}">
+       <div class="relative w-14 h-14 flex-shrink-0">
+        <svg viewBox="0 0 48 48" class="w-14 h-14">
+         <circle cx="24" cy="24" r="20" fill="none" stroke="var(--rt)" stroke-width="3"/>
+         <circle cx="24" cy="24" r="20" fill="none" stroke="${c.ring}" stroke-width="3"
+          stroke-dasharray="${CIRC_SM}" stroke-dashoffset="${offset}"
+          stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:24px 24px"/>
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+         <span class="text-base font-black tabular-nums" style="color:var(--t0)">${fmt(timer.left)}</span>
+        </div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-[0.6rem] font-semibold uppercase tracking-wide" style="color:${c.ring}">${timer.label}</p>
+        <p class="text-sm font-bold truncate" style="color:var(--t0)">${esc(ex.name)}</p>
+       </div>
+       <div class="flex gap-2 flex-shrink-0">
+        <button data-action="list-timer-toggle" class="text-xs px-3 py-2 rounded-xl border"
+         style="color:var(--t2);border-color:var(--b2);background:var(--s1)">${running?'⏸':'▶'}</button>
+        <button data-action="list-timer-skip" class="text-xs px-3 py-2 rounded-xl border"
+         style="color:var(--t2);border-color:var(--b2);background:var(--s1)">Saltar</button>
+       </div>
+      </div>`
+     }
+     const label=stretch
+      ?`${ex.duration}s`
+      :(ex.reps?(ex.sets&&ex.sets>1?`${ex.sets} series · ${ex.reps} reps`:`${ex.reps} reps`):`${ex.duration}s`)
+     const restLabel=(!stretch&&ex.rest)?` · ${ex.rest}s desc`:`  `
      return `
      <button data-action="list-tap" data-bi="${bi}" data-ei="${ei}"
       class="w-full rounded-2xl p-3 flex items-center gap-3 border mb-2 text-left transition-opacity ${done?'opacity-50':''}"
@@ -1488,9 +1521,9 @@ function renderListMain(){
        <p class="text-sm font-bold leading-tight ${done?'line-through':''}" style="color:var(--t0)">${esc(ex.name)}</p>
        <p class="text-[0.62rem] mt-0.5" style="color:var(--t3)">${label}${restLabel}</p>
       </div>
-      <div class="w-7 h-7 rounded-full border-2 flex-shrink-0 flex items-center justify-center text-sm font-bold text-white transition-colors
-       ${done?c.btn+' border-transparent':'border-b2'}">
-       ${done?'✓':''}
+      <div class="w-7 h-7 rounded-full border-2 flex-shrink-0 flex items-center justify-center text-sm font-bold transition-colors
+       ${done?'text-white '+c.btn+' border-transparent':(stretch?c.badge+' border-transparent text-xs':'border-b2')}">
+       ${done?'✓':(stretch?'▶':'')}
       </div>
      </button>`
     }).join('')}
@@ -1498,7 +1531,7 @@ function renderListMain(){
   </div>
   <div class="px-4 pb-10 pt-2 flex-shrink-0">
    <button data-action="list-finish"
-    class="w-full py-4 rounded-2xl text-sm font-semibold border ${doneCount===totalEx?c.btn+' text-white border-transparent':'text-t2'}"
+    class="w-full py-4 rounded-2xl text-sm font-semibold border ${doneCount===totalEx?c.btn+' text-white border-transparent':''}"
     style="${doneCount===totalEx?'':'background:var(--s1);border-color:var(--b2);color:var(--t2)'}">
     ${doneCount===totalEx?'🎉 Finalizar sesión':'Terminar ahora'}
    </button>
@@ -1531,6 +1564,16 @@ function renderListModal(){
    ${meta.feel?`<div class="rounded-xl px-3 py-2.5 mb-3 border-l-2" style="background:var(--bg);border-color:${c.ring}"><p class="text-xs font-semibold mb-0.5" style="color:${c.ring}">Dónde sentirlo</p><p class="text-xs" style="color:var(--t1)">${esc(meta.feel)}</p></div>`:''}
    ${ex.tips?.length?`<div class="flex flex-col gap-1.5 mb-3">${ex.tips.map(t=>`<div class="rounded-lg px-3 py-2 border" style="background:var(--bg);border-color:var(--b2)"><span class="text-xs" style="color:var(--t2)">· ${esc(t)}</span></div>`).join('')}</div>`:''}
    ${ex.tracked?`<button data-action="weight" data-name="${esc(ex.name)}" class="w-full py-2.5 rounded-xl text-sm font-semibold border mb-2" style="background:var(--bg);border-color:var(--b2);color:var(--t2)">${wt?`🏋️ ${wt.weight}${wt.unit} · ${wt.tool}`:'🏋️ Registrar peso'}</button>`:''}
+   ${isStretchEx(ex)&&!done?`
+   <button data-action="list-start-stretch" data-bi="${bi}" data-ei="${ei}"
+    class="w-full py-4 rounded-2xl font-bold text-sm text-white mt-1 ${c.btn}">
+    ▶ Iniciar ${ex.duration}s
+   </button>
+   <button data-action="list-mark-done" data-bi="${bi}" data-ei="${ei}"
+    class="w-full py-3 rounded-2xl text-sm border mt-2"
+    style="background:var(--bg);border-color:var(--b2);color:var(--t2)">
+    Marcar como hecho sin timer
+   </button>`:`
    <div class="flex gap-2 mt-1">
     <button data-action="list-mark-done" data-bi="${bi}" data-ei="${ei}"
      class="flex-1 py-4 rounded-2xl font-bold text-sm ${done?'border':'text-white '+c.btn}"
@@ -1541,9 +1584,9 @@ function renderListModal(){
     <button data-action="list-start-rest" data-bi="${bi}" data-ei="${ei}"
      class="flex-1 py-4 rounded-2xl font-bold text-sm border"
      style="background:var(--bg);border-color:var(--b2);color:var(--t1)">
-     ⏸ Descansar ${ex.rest}s
+     ⏸ Desc ${ex.rest}s
     </button>`:''}
-   </div>
+   </div>`}
    <button data-action="list-modal-close" class="w-full mt-2 py-3 text-sm rounded-xl" style="color:var(--t3)">Cerrar</button>
   </div>
  </div>`
@@ -1609,14 +1652,16 @@ function renderDone(){
 }
 
 // ─── LISTA LIBRE ───────────────────────────────────────────────────────────────
+function isStretchEx(ex){
+ return ['stretch','mobility','foam'].includes(getExMeta(ex).visualId)
+}
 function startWorkoutList(){
  if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
  state.screen='workout-list'
  state.listDone={}
  state.listPhase='list'
  state.listActiveEx=null
- state.listRestLeft=0
- state.listRestTotal=0
+ state.listInlineTimer=null
  navigator.wakeLock?.request('screen').then(l=>{wakeLock=l}).catch(()=>{})
  render()
 }
@@ -1635,49 +1680,64 @@ function listMarkDone(bi,ei){
  state.listDone[key]=!wasDone
  state.listPhase='list'
  state.listActiveEx=null
- if(!wasDone&&ex.rest>0) _listStartRestTimer(ex,bi,ei,ex.rest)
+ if(state.listInlineTimer?.key===key){ clearInterval(listRestInterval); listRestInterval=null; state.listInlineTimer=null }
+ if(!wasDone&&!isStretchEx(ex)&&ex.rest>0) _listStartInlineTimer(ex,bi,ei,ex.rest,'Descansando',false)
  else render()
 }
 function listStartRest(bi,ei){
  const session=getSessions().find(s=>s.id===state.sessionId)
  const ex=session.blocks[bi].exercises[ei]
- state.listPhase='list'
- state.listActiveEx=null
- _listStartRestTimer(ex,bi,ei,ex.rest)
+ state.listPhase='list'; state.listActiveEx=null
+ _listStartInlineTimer(ex,bi,ei,ex.rest,'Descansando',false)
 }
-function _listStartRestTimer(ex,bi,ei,secs){
+function listStartStretch(bi,ei){
+ const session=getSessions().find(s=>s.id===state.sessionId)
+ const ex=session.blocks[bi].exercises[ei]
+ state.listPhase='list'; state.listActiveEx=null
+ _listStartInlineTimer(ex,bi,ei,ex.duration,'Manteniendo',true)
+}
+function _listStartInlineTimer(ex,bi,ei,secs,label,autoMark){
  if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
- state.listPhase='rest'
- state.listActiveEx={ex,bi,ei}
- state.listRestLeft=secs
- state.listRestTotal=secs
+ const key=`${ex.name}|${bi}|${ei}`
+ state.listInlineTimer={key,left:secs,total:secs,label,autoMark,bi,ei}
  render()
  listRestInterval=setInterval(()=>{
-  state.listRestLeft--
-  if(state.listRestLeft<=0){
+  if(!state.listInlineTimer){ clearInterval(listRestInterval); listRestInterval=null; return }
+  state.listInlineTimer.left--
+  if(state.listInlineTimer.left<=0){
    clearInterval(listRestInterval); listRestInterval=null
-   state.listPhase='list'; state.listActiveEx=null
+   if(state.listInlineTimer.autoMark) state.listDone[state.listInlineTimer.key]=true
+   state.listInlineTimer=null
    vibe([40,30,40])
   }
   render()
  },1000)
 }
-function listRestSkip(){
+function listTimerSkip(){
  if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
- state.listPhase='list'; state.listActiveEx=null
+ state.listInlineTimer=null
  render()
 }
-function listRestToggle(){
- if(listRestInterval){
-  clearInterval(listRestInterval); listRestInterval=null
- } else {
-  const {ex,bi,ei}=state.listActiveEx
-  _listStartRestTimer(ex,bi,ei,state.listRestLeft)
+function listTimerToggle(){
+ if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null; render() }
+ else if(state.listInlineTimer){
+  listRestInterval=setInterval(()=>{
+   if(!state.listInlineTimer){ clearInterval(listRestInterval); listRestInterval=null; return }
+   state.listInlineTimer.left--
+   if(state.listInlineTimer.left<=0){
+    clearInterval(listRestInterval); listRestInterval=null
+    if(state.listInlineTimer.autoMark) state.listDone[state.listInlineTimer.key]=true
+    state.listInlineTimer=null
+    vibe([40,30,40])
+   }
+   render()
+  },1000)
+  render()
  }
- render()
 }
 function listFinish(){
  if(listRestInterval){ clearInterval(listRestInterval); listRestInterval=null }
+ state.listInlineTimer=null
  state.screen='done'
  markDone(state.sessionId)
  vibe([100,50,100,50,300])
@@ -1709,13 +1769,14 @@ function bindEvents(){
    else if(a==='session')     goSession()
    else if(a==='start')       startWorkout()
    else if(a==='start-list')  startWorkoutList()
-   else if(a==='list-tap')    listTap(+el.dataset.bi,+el.dataset.ei)
-   else if(a==='list-mark-done')  listMarkDone(+el.dataset.bi,+el.dataset.ei)
-   else if(a==='list-start-rest') listStartRest(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-tap')          listTap(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-mark-done')    listMarkDone(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-start-rest')   listStartRest(+el.dataset.bi,+el.dataset.ei)
+   else if(a==='list-start-stretch') listStartStretch(+el.dataset.bi,+el.dataset.ei)
    else if(a==='list-modal-close'||a==='list-modal-close-bg'){ if(a==='list-modal-close-bg'&&e.target!==el) return; state.listPhase='list'; state.listActiveEx=null; render() }
-   else if(a==='list-rest-skip')   listRestSkip()
-   else if(a==='list-rest-toggle') listRestToggle()
-   else if(a==='list-finish')      listFinish()
+   else if(a==='list-timer-skip')   listTimerSkip()
+   else if(a==='list-timer-toggle') listTimerToggle()
+   else if(a==='list-finish')       listFinish()
    else if(a==='start-ex')    startExercise()
    else if(a==='toggle')      toggleRun()
    else if(a==='next')        goNext()
