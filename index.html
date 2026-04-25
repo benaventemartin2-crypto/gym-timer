@@ -994,16 +994,15 @@ function renderSession(){
   </div>
   <div class="px-4 pb-10 pt-2 flex flex-col gap-2">
    ${isDone?`<p class="text-center text-[0.62rem] mb-1" style="color:var(--t4)">✓ Completada esta semana</p>`:''}
+   ${session.category==='gym'?`
+   <button data-action="start-list" class="${c.btn} w-full py-5 rounded-2xl text-lg font-bold text-white">
+    ${isDone?'Repetir sesión':'Iniciar sesión'}
+   </button>
+   `:`
    <button data-action="start" class="${c.btn} w-full py-5 rounded-2xl text-lg font-bold text-white">
     ${isDone?'Repetir sesión':'Iniciar sesión'}
    </button>
-   ${isStrengthSession(session)?`
-   <button data-action="start-list"
-    class="w-full py-4 rounded-2xl text-sm font-semibold border"
-    style="background:var(--s1);border-color:var(--b2);color:var(--t0)">
-    📋 Lista libre de ejercicios
-   </button>
-   `:''}
+   `}
    <button data-action="edit-open" data-id="${session.id}"
     class="w-full py-3.5 rounded-2xl text-sm font-semibold border"
     style="background:var(--s1);border-color:var(--b2);color:var(--t2)">
