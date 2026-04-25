@@ -1680,7 +1680,9 @@ function renderListModal(){
  return `
  <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.5)" data-action="list-modal-close-bg">
   <div class="w-full rounded-t-3xl p-5 overflow-y-auto max-h-[88vh]" style="background:var(--s1)">
-   <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background:var(--b2)"></div>
+   <button data-action="list-modal-close" class="w-full flex justify-center pb-3 -mt-1" style="color:transparent">
+    <div class="w-10 h-1 rounded-full" style="background:var(--b2)"></div>
+   </button>
    ${renderVisual(ex, session.accent)}
    <h2 class="text-2xl font-black mt-3 mb-1" style="color:var(--t0)">${esc(ex.name)}</h2>
    <p class="text-sm leading-relaxed mb-3" style="color:var(--t1)">${esc(ex.instruction)}</p>
