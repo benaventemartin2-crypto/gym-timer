@@ -1068,14 +1068,16 @@ function renderHome(){
      const dayNum=parseInt(dk.slice(8))
      const isToday=dk===tk
      const doneIds=getDayDone(dk)
-     const sess=doneIds.length?allS.find(s=>s.id===doneIds[0]):null
-     if(sess){
-      const c2=ACCENT[sess.accent]
+     const dSess=doneIds.map(id=>allS.find(s=>s.id===id)).filter(Boolean)
+     if(dSess.length){
+      const c2=ACCENT[dSess[0].accent]
+      const emojis=dSess.map(s=>s.emoji).join('')
+      const label=dSess.length>1?`${dSess.length} ses.`:dSess[0].name.split(' ')[0]
       return `<div class="flex-1 rounded-xl py-1.5 text-center" style="background:var(--s2);border:1px solid ${c2.ring}55">
        <p class="text-[0.5rem] font-bold" style="color:${c2.ring}">${dnames[i]}</p>
        <p class="text-[0.62rem] font-black tabular-nums" style="color:var(--t1)">${dayNum}</p>
-       <p class="text-lg leading-none">${sess.emoji}</p>
-       <p class="text-[0.42rem] font-bold truncate px-0.5" style="color:${c2.ring}">${sess.name.split(' ')[0]}</p>
+       <p class="text-sm leading-none truncate px-0.5">${emojis}</p>
+       <p class="text-[0.42rem] font-bold truncate px-0.5" style="color:${c2.ring}">${label}</p>
       </div>`
      }
      return `<div class="flex-1 rounded-xl py-1.5 text-center border" style="background:var(--s2);border-color:${isToday?'var(--b1)':'transparent'}">
