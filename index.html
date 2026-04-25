@@ -1002,6 +1002,11 @@ function renderSession(){
    <button data-action="start" class="${c.btn} w-full py-5 rounded-2xl text-lg font-bold text-white">
     ${isDone?'Repetir sesión':'Iniciar sesión'}
    </button>
+   <button data-action="start-list"
+    class="w-full py-4 rounded-2xl text-sm font-semibold border"
+    style="background:var(--s1);border-color:var(--b2);color:var(--t0)">
+    📋 Ver ejercicios
+   </button>
    `}
    <button data-action="edit-open" data-id="${session.id}"
     class="w-full py-3.5 rounded-2xl text-sm font-semibold border"
@@ -1528,11 +1533,16 @@ function renderListMain(){
     }).join('')}
    `).join('')}
   </div>
-  <div class="px-4 pb-10 pt-2 flex-shrink-0">
+  <div class="px-4 pb-10 pt-2 flex-shrink-0 flex flex-col gap-2">
+   ${session.category!=='gym'?`
+   <button data-action="start" class="${c.btn} w-full py-5 rounded-2xl text-lg font-bold text-white">
+    ▶ Iniciar con timer
+   </button>
+   `:''}
    <button data-action="list-finish"
-    class="w-full py-4 rounded-2xl text-sm font-semibold border ${doneCount===totalEx?c.btn+' text-white border-transparent':''}"
-    style="${doneCount===totalEx?'':'background:var(--s1);border-color:var(--b2);color:var(--t2)'}">
-    ${doneCount===totalEx?'🎉 Finalizar sesión':'Terminar ahora'}
+    class="w-full py-4 rounded-2xl text-sm font-semibold border ${doneCount===totalEx&&session.category==='gym'?c.btn+' text-white border-transparent':''}"
+    style="${doneCount===totalEx&&session.category==='gym'?'':'background:var(--s1);border-color:var(--b2);color:var(--t2)'}">
+    ${doneCount===totalEx&&session.category==='gym'?'🎉 Finalizar sesión':'Terminar ahora'}
    </button>
   </div>
  </div>`
