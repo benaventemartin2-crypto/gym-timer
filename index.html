@@ -859,6 +859,28 @@ function markDone(id){
 }
 function getDayDone(dateKey){ return (lsGet(DAY_K)||{})[dateKey]||[] }
 function getWeekDays(){ const days=[],today=new Date(),dow=today.getDay()||7,mon=new Date(today); mon.setDate(today.getDate()-dow+1); for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(localKey(d))} return days }
+function getMonthDays(year,month){
+ const days=[],last=new Date(year,month+1,0).getDate()
+ for(let i=1;i<=last;i++){ const dt=new Date(year,month,i); let wd=dt.getDay(); if(wd===0)wd=7
+  days.push({ key:localKey(dt), day:i, weekday:wd, isToday:localKey(dt)===todayKey(), isFuture:dt>new Date() }) }
+ return days
+}
+function getMonthStats(year,month){
+ const all=getSessions()
+ const days=getMonthDays(year,month)
+ let total=0; const byCat={}; const byId={}
+ days.forEach(d=>{
+  const ids=getDayDone(d.key)
+  ids.forEach(id=>{
+   const s=all.find(x=>x.id===id); if(!s) return
+   total++
+   byCat[s.category]=(byCat[s.category]||0)+1
+   byId[id]=(byId[id]||0)+1
+  })
+ })
+ const activeDays=days.filter(d=>getDayDone(d.key).length>0).length
+ return { total, byCat, byId, activeDays, totalDays:days.length }
+}
 function getCategoryStreak(cat){
  const all=getSessions(); const ids=new Set(all.filter(s=>s.category===cat).map(s=>s.id))
  const dy=lsGet(DAY_K)||{}; let streak=0; const d=new Date()
@@ -927,6 +949,8 @@ let state = {
  editSessionId:null, editData:null, editExpanded:null, editImagePicker:null, editError:null,
  // Lista libre de ejercicios
  listDone:{}, listPhase:'list', listActiveEx:null, listInlineTimer:null,
+ // Modal de mes
+ showMonth:false, monthOffset:0,
 }
 let timerInterval=null, wakeLock=null, listRestInterval=null
 
@@ -1193,7 +1217,7 @@ function renderHome(){
      </div>
     </div>`}).join('')}
   </div>`:''}
-  <div class="px-4 mb-4">
+  <button data-action="open-month" class="w-full px-4 mb-4 active:opacity-70 transition-opacity" style="text-align:left">
    <div class="flex gap-1">${(()=>{
     const allS=getSessions(),wdays=getWeekDays(),tk=todayKey()
     const dnames=['L','M','X','J','V','S','D']
@@ -1221,7 +1245,8 @@ function renderHome(){
      </div>`
     }).join('')
    })()}</div>
-  </div>
+   <p class="text-center mt-1.5 text-[0.55rem] font-semibold tracking-wide" style="color:var(--t3)">Ver mes completo →</p>
+  </button>
   <div class="flex gap-0 px-4 mb-5 overflow-x-auto" style="border-bottom:1px solid var(--b2)">
    ${CATS.map(cat=>`
     <button data-action="cat" data-cat="${cat.id}"
@@ -1295,6 +1320,112 @@ function renderHome(){
      </div>
     </button>`
    }).join('')}
+  </div>
+  ${state.showMonth?renderMonthModal():''}
+ </div>`
+}
+
+// ─── RENDER MONTH MODAL ────────────────────────────────────────────────────────
+function renderMonthModal(){
+ const allS=getSessions()
+ const ref=new Date(); ref.setDate(1); ref.setMonth(ref.getMonth()+state.monthOffset)
+ const year=ref.getFullYear(), month=ref.getMonth()
+ const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+ const days=getMonthDays(year,month)
+ const stats=getMonthStats(year,month)
+ const dnames=['L','M','X','J','V','S','D']
+ const firstWd=days[0]?.weekday||1
+ const blanks=Array.from({length:firstWd-1})
+ const catLabels={ gym:'Gym', tennis:'Tenis', golf:'Golf', mobility:'Movilidad', extra:'Postura' }
+ const catEmojis={ gym:'🏋️', tennis:'🎾', golf:'⛳', mobility:'🧘', extra:'📏' }
+ const isCurrentMonth=state.monthOffset===0
+ return `
+ <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.7)" data-action="close-month-bg">
+  <div class="w-full rounded-t-3xl overflow-y-auto max-h-[92vh] s-up" style="background:var(--s1)">
+   <button data-action="close-month" class="w-full flex justify-center pt-3 pb-1" style="color:transparent">
+    <div class="w-10 h-1 rounded-full" style="background:var(--b2)"></div>
+   </button>
+   <div class="px-5 py-3 flex items-center justify-between">
+    <button data-action="month-prev" class="w-10 h-10 rounded-xl text-base flex items-center justify-center border"
+     style="background:var(--s2);border-color:var(--b2);color:var(--t1)">‹</button>
+    <div class="text-center">
+     <p class="text-[0.55rem] font-black uppercase tracking-widest" style="color:var(--t3)">Resumen del mes</p>
+     <h2 class="text-xl font-black" style="color:var(--t0)">${monthNames[month]} ${year}</h2>
+    </div>
+    <button data-action="month-next" class="w-10 h-10 rounded-xl text-base flex items-center justify-center border"
+     style="background:var(--s2);border-color:var(--b2);color:var(--t1);${isCurrentMonth?'opacity:0.3;pointer-events:none':''}">›</button>
+   </div>
+   <div class="px-4 grid grid-cols-3 gap-2 mb-3">
+    <div class="rounded-xl p-2.5 text-center" style="background:var(--s2)">
+     <p class="text-[0.5rem] font-bold uppercase tracking-widest" style="color:var(--t3)">Sesiones</p>
+     <p class="text-2xl font-black tabular-nums" style="color:var(--t0)">${stats.total}</p>
+    </div>
+    <div class="rounded-xl p-2.5 text-center" style="background:var(--s2)">
+     <p class="text-[0.5rem] font-bold uppercase tracking-widest" style="color:var(--t3)">Días activos</p>
+     <p class="text-2xl font-black tabular-nums" style="color:var(--t0)">${stats.activeDays}<span class="text-xs font-semibold" style="color:var(--t3)">/${stats.totalDays}</span></p>
+    </div>
+    <div class="rounded-xl p-2.5 text-center" style="background:var(--s2)">
+     <p class="text-[0.5rem] font-bold uppercase tracking-widest" style="color:var(--t3)">Constancia</p>
+     <p class="text-2xl font-black tabular-nums" style="color:var(--t0)">${stats.totalDays>0?Math.round((stats.activeDays/stats.totalDays)*100):0}<span class="text-xs font-semibold" style="color:var(--t3)">%</span></p>
+    </div>
+   </div>
+   <div class="px-4 mb-3">
+    <div class="grid grid-cols-7 gap-1 mb-1">
+     ${dnames.map(n=>`<p class="text-[0.55rem] font-bold text-center" style="color:var(--t3)">${n}</p>`).join('')}
+    </div>
+    <div class="grid grid-cols-7 gap-1">
+     ${blanks.map(()=>`<div></div>`).join('')}
+     ${days.map(d=>{
+      const ids=getDayDone(d.key)
+      const dSess=ids.map(id=>allS.find(s=>s.id===id)).filter(Boolean)
+      if(dSess.length){
+       const c2=ACCENT[dSess[0].accent]
+       const emoji=dSess.length>1?'•':dSess[0].emoji
+       return `<div class="aspect-square rounded-lg flex flex-col items-center justify-center" style="background:var(--s2);border:1.5px solid ${c2.ring}88">
+        <p class="text-[0.55rem] font-bold tabular-nums" style="color:${c2.ring}">${d.day}</p>
+        <p class="text-xs leading-none">${emoji}${dSess.length>1?`<span class="text-[0.55rem] font-black" style="color:${c2.ring}">${dSess.length}</span>`:''}</p>
+       </div>`
+      }
+      return `<div class="aspect-square rounded-lg flex items-center justify-center ${d.isToday?'border':''}" style="background:var(--s2);${d.isToday?'border-color:var(--t3)':''};${d.isFuture?'opacity:0.35':''}">
+       <p class="text-[0.6rem] font-semibold tabular-nums" style="color:${d.isToday?'var(--t0)':'var(--t4)'}">${d.day}</p>
+      </div>`
+     }).join('')}
+    </div>
+   </div>
+   ${stats.total>0?`
+   <div class="px-4 mb-3">
+    <p class="text-[0.55rem] font-bold uppercase tracking-widest mb-2" style="color:var(--t3)">Por categoría</p>
+    <div class="flex flex-col gap-1.5">
+     ${Object.entries(stats.byCat).sort((a,b)=>b[1]-a[1]).map(([cat,n])=>`
+      <div class="rounded-xl px-3 py-2 flex items-center gap-3" style="background:var(--s2)">
+       <span class="text-base">${catEmojis[cat]||'·'}</span>
+       <span class="text-xs font-semibold flex-1" style="color:var(--t1)">${catLabels[cat]||cat}</span>
+       <span class="text-sm font-black tabular-nums" style="color:var(--t0)">${n}</span>
+      </div>`).join('')}
+    </div>
+   </div>
+   <div class="px-4 mb-4">
+    <p class="text-[0.55rem] font-bold uppercase tracking-widest mb-2" style="color:var(--t3)">Sesiones más hechas</p>
+    <div class="flex flex-col gap-1.5">
+     ${Object.entries(stats.byId).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([id,n])=>{
+      const s=allS.find(x=>x.id===id); if(!s) return ''
+      const c2=ACCENT[s.accent]
+      return `<div class="rounded-xl px-3 py-2 flex items-center gap-3 border" style="background:var(--bg);border-color:${c2.ring}44">
+       <span class="text-base">${s.emoji}</span>
+       <span class="text-xs font-semibold flex-1 truncate" style="color:var(--t1)">${esc(s.name)}</span>
+       <span class="text-sm font-black tabular-nums" style="color:${c2.ring}">×${n}</span>
+      </div>`
+     }).join('')}
+    </div>
+   </div>
+   `:`<div class="px-4 mb-4 text-center py-6">
+    <p class="text-3xl mb-2 opacity-40">📅</p>
+    <p class="text-xs" style="color:var(--t3)">Sin sesiones registradas en este mes</p>
+   </div>`}
+   <div class="px-4 pb-6">
+    <button data-action="close-month" class="w-full py-3 rounded-2xl text-sm font-semibold border"
+     style="background:var(--bg);border-color:var(--b2);color:var(--t1)">Cerrar</button>
+   </div>
   </div>
  </div>`
 }
@@ -2164,6 +2295,10 @@ function bindEvents(){
    if(a==='close-weight-bg'&&e.target!==el) return
    if(a==='img-picker-close-bg'&&e.target!==el) return
    if(a==='cat')              setCat(el.dataset.cat)
+   else if(a==='open-month')  { state.showMonth=true; state.monthOffset=0; render() }
+   else if(a==='close-month'||a==='close-month-bg'){ if(a==='close-month-bg'&&e.target!==el) return; state.showMonth=false; render() }
+   else if(a==='month-prev')  { state.monthOffset--; render() }
+   else if(a==='month-next')  { if(state.monthOffset<0){ state.monthOffset++; render() } }
    else if(a==='session'&&el.dataset.id) selectSession(el.dataset.id)
    else if(a==='session')     goSession()
    else if(a==='start')       startWorkout()
