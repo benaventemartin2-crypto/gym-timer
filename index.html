@@ -845,7 +845,13 @@ function renderVisual(ex, accent, compact=false){
 const WK='gt_weights_v3', HK='gt_history_v3', SK='gt_sessions_v5', DK='gt_dark_v1', DAY_K='gt_days_v1'
 function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } }
 function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)) }catch{} }
-function getSessions(){ return lsGet(SK) || SESSIONS_SEED }
+function getSessions(){
+ const stored=lsGet(SK)
+ if(!stored) return SESSIONS_SEED
+ const ids=new Set(stored.map(s=>s.id))
+ const missing=SESSIONS_SEED.filter(s=>!ids.has(s.id))
+ return missing.length?[...stored,...missing]:stored
+}
 function saveSessionById(sess){ const all=getSessions().map(s=>s.id===sess.id?sess:s); lsSet(SK,all) }
 function getWeight(n){ const d=lsGet(WK)||{}; return d[n]||null }
 function logWeight(n,e){ const d=lsGet(WK)||{}; d[n]={...e,date:new Date().toISOString().slice(0,10)}; lsSet(WK,d) }
