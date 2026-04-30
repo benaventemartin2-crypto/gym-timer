@@ -517,6 +517,104 @@ const SESSIONS_SEED = [
    ]},
   ]
  },
+ {
+  id:'height-reset', category:'extra', emoji:'📏', accent:'sky',
+  name:'Reset Diario de Postura',
+  goal:'Descomprime, reactiva la cadena posterior y re-alinea — 5 a 8 minutos',
+  duration:'~7 min', load:'baja', optional:false,
+  frequency:'Diariamente — al despertar, en pausa de trabajo o antes de dormir',
+  tags:['postura','descompresión','reset','altura'],
+  blocks:[
+   { name:'Reset', icon:'🧍', duration:7, exercises:[
+    { name:'Cat-Cow', instruction:'Cuadrupedia. Arquea y redondea la espalda. Lento.',
+      tips:['Inhala al arquear, exhala al redondear','Mueve cada vértebra — articula la columna entera'],
+      duration:50, image:'cat-cow' },
+    { name:'Cobra suave', instruction:'Boca abajo. Manos bajo los hombros. Eleva el pecho con codos cerca del cuerpo.',
+      tips:['Pelvis pegada al suelo — la extensión es torácica, no lumbar','Glúteos relajados — no aprietes para subir'],
+      duration:30, image:'cobra-stretch' },
+    { name:'Pelvic tilt', instruction:'Tumbado boca arriba, rodillas dobladas. Bascula la pelvis para pegar lumbar al suelo.',
+      tips:['10 reps lentas — exhala al bascular','Activa abdomen profundo — corrige hiperlordosis'],
+      duration:35, reps:'10', image:'pelvic-tilt' },
+    { name:'Glute bridge', instruction:'Boca arriba, rodillas dobladas. Eleva la cadera apretando glúteos.',
+      tips:['10 reps con pausa 1s arriba','Sin sentir la lumbar — el trabajo está en glúteos'],
+      duration:40, reps:'10', image:'glute-bridge' },
+    { name:'Postura contra la pared', instruction:'Talones, glúteos, espalda alta y cabeza tocando la pared. Mantén.',
+      tips:['Lumbar mínima entre pared y espalda — no fuerces a aplanar','Mentón paralelo al suelo, no levantado'],
+      duration:60, image:'wall-posture' },
+    { name:'Dead hang', instruction:'Cuélgate de una barra. Brazos relajados, cuerpo pasivo. Solo si tienes barra disponible.',
+      tips:['Si no hay barra — sustituye por extensión sobre foam','La gravedad descomprime la columna y los hombros'],
+      duration:30, image:'dead-hang' },
+    { name:'Chin tuck', instruction:'Sentado o de pie. Lleva el mentón hacia atrás como creando papada — sin inclinar.',
+      tips:['10 reps de 2s cada una','Corrige cuello adelantado — ese cuello que sale del trabajar con pantalla'],
+      duration:25, reps:'10', image:'chin-tuck' },
+   ]},
+  ]
+ },
+ {
+  id:'height-full', category:'extra', emoji:'🧍',
+  accent:'purple',
+  name:'Postura Completa',
+  goal:'Sesión profunda de movilidad, fuerza postural y descompresión — 20 a 25 min',
+  duration:'~22 min', load:'baja', optional:false,
+  frequency:'2 a 3 veces por semana — como sesión propia o finisher',
+  tags:['postura','fuerza postural','descompresión','altura'],
+  blocks:[
+   { name:'Movilidad y Reset', icon:'🌀', duration:8, exercises:[
+    { name:'Cat-Cow', instruction:'Cuadrupedia. Articula vértebra por vértebra arqueando y redondeando.',
+      tips:['10 reps muy lentas','Es la primera activación — sin prisa'],
+      duration:60, image:'cat-cow' },
+    { name:'Cobra stretch', instruction:'Boca abajo. Manos bajo hombros. Eleva el pecho con codos cerca del torso.',
+      tips:['Extensión torácica — no en lumbar','Respira profundo en la posición alta'],
+      duration:45, image:'cobra-stretch' },
+    { name:'Thread the Needle', instruction:'Cuadrupedia. Desliza un brazo por debajo del otro. Hombro al suelo.',
+      tips:['La cadera permanece arriba','Rotación máxima de la columna torácica'],
+      duration:45, side:true, image:'thread-needle' },
+    { name:'Extensión torácica con foam', instruction:'Foam roller bajo la espalda alta. Manos detrás de la cabeza. Extiende.',
+      tips:['Solo zona torácica — no rodar la lumbar','Pausa 3s en cada nivel — la torácica suele estar muy rígida'],
+      duration:60, image:'foam-thoracic' },
+    { name:"World's Greatest Stretch", instruction:'Estocada profunda. Mano al suelo. Abre el brazo del lado de la pierna delantera al techo.',
+      tips:['Combina cadera + rotación torácica','3 reps lentas por lado'],
+      duration:50, side:true, image:'worlds-greatest-stretch' },
+    { name:'Pigeon', instruction:'Una pierna doblada al frente, la otra extendida atrás. Apoya el torso adelante.',
+      tips:['Cada exhala permite más profundidad','Sin dolor en la rodilla — ajusta el ángulo'],
+      duration:60, side:true, image:'pigeon' },
+   ]},
+   { name:'Fuerza Postural', icon:'💪', duration:9, exercises:[
+    { name:'Glute bridge', instruction:'Boca arriba. Eleva la cadera con pausa arriba. 12 reps.',
+      tips:['Aprieta glúteos al tope — pausa 2s','Glúteo fuerte = pelvis bien posicionada = postura erguida'],
+      duration:55, reps:'12', image:'glute-bridge' },
+    { name:'Bird dog', instruction:'Cuadrupedia. Extiende brazo y pierna contraria. Mantén 2s y alterna.',
+      tips:['Cadera no rota — sin compensar con la lumbar','8 reps por lado — trabaja core profundo y multífidos'],
+      duration:60, side:true, image:'bird-dog' },
+    { name:'Y-T-W contra el suelo', instruction:'Boca abajo. Brazos en Y, luego T, luego W. Despega ligeramente del suelo.',
+      tips:['Sin peso — busca contracción de la espalda alta','Combate hombros adelantados típicos del escritorio'],
+      duration:55, reps:'10', image:'y-t-w' },
+    { name:'Jefferson curl (liviano)', instruction:'De pie sobre cajón. Peso muy liviano (2-5kg). Redondea bajando lentamente.',
+      tips:['Articula vértebra por vértebra — peso debe ser MUY liviano','8 reps · si te duele, redúcelo o sáltalo'],
+      duration:60, reps:'8', image:'jefferson-curl' },
+    { name:'Pelvic tilt activo', instruction:'Boca arriba. Bascula la pelvis pegando lumbar al suelo y sostén 3s.',
+      tips:['12 reps lentas — exhala al bascular','Re-educa el patrón pélvico neutro'],
+      duration:45, reps:'12', image:'pelvic-tilt' },
+    { name:'Inclinación lateral con palo', instruction:'De pie. Palo en hombros o brazos arriba. Inclina el tronco lateralmente sin rotar.',
+      tips:['Movimiento puro lateral — sin girar','Estira costado y activa oblicuos opuestos'],
+      duration:50, side:true, image:'side-bend' },
+   ]},
+   { name:'Descompresión', icon:'📏', duration:5, exercises:[
+    { name:'Dead hang', instruction:'Cuélgate de la barra con brazos extendidos. Relaja todo el cuerpo.',
+      tips:['Empieza con 20-30s y progresa','La gravedad descomprime discos y abre la cintura escapular'],
+      duration:40, sets:3, rest:30, image:'dead-hang' },
+    { name:'Elevación de rodilla colgado', instruction:'Colgado de la barra. Eleva las rodillas hacia el pecho. Controla la bajada.',
+      tips:['8 reps lentas — sin balanceo','Combina descompresión con activación del core'],
+      duration:45, reps:'8', image:'hanging-knee-raise' },
+    { name:'Postura contra la pared', instruction:'Talones, glúteos, espalda alta y cabeza tocando la pared. Cierra los ojos.',
+      tips:['Memoriza esta sensación — es tu postura objetivo','Respira lento durante todo el tiempo'],
+      duration:90, image:'wall-posture' },
+    { name:"Child's Pose + respiración", instruction:'Rodillas al suelo, sentado sobre talones. Brazos al frente. Respira profundo.',
+      tips:['Cada exhala alarga la columna','Cierra la sesión con calma — el cuerpo absorbe los cambios'],
+      duration:60, image:'childs-pose' },
+   ]},
+  ]
+ },
 ]
 
 // ─── CONSTANTS ─────────────────────────────────────────────────────────────────
@@ -534,6 +632,7 @@ const CATS = [
  { id:'tennis',   label:'Pre-Tenis',   emoji:'🎾' },
  { id:'golf',     label:'Pre-Golf',    emoji:'⛳' },
  { id:'mobility', label:'Movilidad',   emoji:'🧘' },
+ { id:'extra',    label:'Postura',     emoji:'📏' },
 ]
 const LOAD_CLR = { baja:'bg-emerald-950 text-emerald-400', media:'bg-amber-950 text-amber-400', alta:'bg-red-950 text-red-400' }
 const LOAD_LBL = { baja:'Baja', media:'Media', alta:'Alta' }
@@ -554,6 +653,8 @@ const VISUALS = {
  jump:     { emoji:'⚡', label:'Potencia' },
  mobility: { emoji:'🌀', label:'Movilidad' },
  tennis:   { emoji:'🎾', label:'Tenis' },
+ decompression: { emoji:'📏', label:'Descompresión' },
+ posture:  { emoji:'🧍', label:'Postura' },
 }
 
 // ─── EXERCISE META ─────────────────────────────────────────────────────────────
@@ -640,6 +741,14 @@ const EXERCISE_META = {
  'golf-swing-slow':        { visualId:'rotation', bodyZone:'full body rotacional',              feel:'cadera lidera, brazos siguen — follow-through completo a 50% velocidad' },
  'golf-half-swing':        { visualId:'rotation', bodyZone:'cadena cinética · core',            feel:'potencia desde pies → rodillas → cadera → tronco → brazos' },
  'golf-putt':              { visualId:'mobility', bodyZone:'hombros · core estabilizador',      feel:'movimiento pendular puro de hombros — muñecas neutras todo el recorrido' },
+ 'dead-hang':              { visualId:'decompression', bodyZone:'columna · cintura escapular', feel:'cuerpo relajado — la gravedad hace todo el trabajo descomprimiendo' },
+ 'cobra-stretch':          { visualId:'stretch',  bodyZone:'columna torácica · abdomen',         feel:'apertura del pecho y zona media — pelvis pegada al suelo' },
+ 'pelvic-tilt':            { visualId:'posture',  bodyZone:'pelvis · abdomen profundo',          feel:'lumbar pegándose al suelo — re-educa el patrón pélvico neutro' },
+ 'glute-bridge':           { visualId:'bridge',   bodyZone:'glúteos · cadena posterior',         feel:'aprieta glúteos al tope — sin sentirlo en la lumbar' },
+ 'wall-posture':           { visualId:'posture',  bodyZone:'alineación global',                  feel:'memoriza esta postura — talones, glúteos, espalda alta y cabeza tocando' },
+ 'chin-tuck':              { visualId:'posture',  bodyZone:'cervicales · suboccipitales',        feel:'mentón hacia atrás — corrige cuello adelantado por pantalla' },
+ 'jefferson-curl':         { visualId:'stretch',  bodyZone:'cadena posterior · columna entera',  feel:'articula vértebra por vértebra — peso debe ser MUY liviano' },
+ 'hanging-knee-raise':     { visualId:'decompression', bodyZone:'core · descompresión',          feel:'controla la subida y bajada — sin balanceo' },
 }
 
 // ─── FIGURE MAP ────────────────────────────────────────────────────────────────
@@ -698,6 +807,14 @@ const FIGURE_MAP = {
  'golf-swing-slow':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><circle cx="30" cy="10" r="6"/><line x1="30" y1="16" x2="32" y2="40"/><line x1="31" y1="24" x2="10" y2="18"/><line x1="10" y1="18" x2="2" y2="8"/><line x1="2" y1="8" x2="4" y2="4"/><line x1="31" y1="24" x2="50" y2="28"/><line x1="32" y1="40" x2="18" y2="60"/><line x1="32" y1="40" x2="46" y2="56"/></svg>`,
  'golf-half-swing':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><circle cx="34" cy="12" r="6"/><line x1="34" y1="18" x2="34" y2="40"/><line x1="34" y1="26" x2="14" y2="20"/><line x1="14" y1="20" x2="6" y2="28"/><line x1="34" y1="26" x2="52" y2="28"/><line x1="34" y1="40" x2="20" y2="60"/><line x1="34" y1="40" x2="48" y2="56"/></svg>`,
  'golf-putt':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><circle cx="32" cy="12" r="6"/><line x1="32" y1="18" x2="30" y2="42"/><line x1="31" y1="28" x2="16" y2="34"/><line x1="31" y1="28" x2="46" y2="34"/><line x1="16" y1="34" x2="14" y2="46"/><line x1="46" y1="34" x2="44" y2="46"/><line x1="14" y1="46" x2="44" y2="46"/><line x1="30" y1="42" x2="20" y2="64"/><line x1="30" y1="42" x2="38" y2="64"/><line x1="4" y1="70" x2="72" y2="70" stroke-width="1.5" opacity="0.4"/></svg>`,
+ 'dead-hang':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><line x1="2" y1="6" x2="58" y2="6" stroke-width="3.5"/><line x1="14" y1="6" x2="14" y2="14"/><line x1="46" y1="6" x2="46" y2="14"/><circle cx="30" cy="22" r="6"/><line x1="30" y1="14" x2="30" y2="22" stroke-dasharray="2,2"/><line x1="14" y1="14" x2="22" y2="20"/><line x1="46" y1="14" x2="38" y2="20"/><line x1="30" y1="28" x2="30" y2="58"/><line x1="30" y1="58" x2="24" y2="74"/><line x1="30" y1="58" x2="36" y2="74"/></svg>`,
+ 'cobra-stretch':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="6" y1="50" x2="70" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="20" cy="14" r="6"/><line x1="20" y1="20" x2="32" y2="32"/><line x1="32" y1="32" x2="68" y2="48"/><line x1="20" y1="22" x2="14" y2="48"/><line x1="32" y1="32" x2="22" y2="48"/><line x1="42" y1="36" x2="38" y2="50"/><line x1="60" y1="46" x2="56" y2="50"/></svg>`,
+ 'pelvic-tilt':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="46" x2="72" y2="46" stroke-width="1.5" opacity="0.3"/><circle cx="14" cy="34" r="6"/><line x1="20" y1="34" x2="40" y2="36"/><line x1="40" y1="36" x2="42" y2="20"/><line x1="42" y1="20" x2="56" y2="36"/><line x1="56" y1="36" x2="68" y2="46"/><line x1="48" y1="36" x2="60" y2="46"/><path d="M40 24 Q44 18 50 22" stroke-dasharray="2,2" fill="none"/></svg>`,
+ 'glute-bridge':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="10" cy="38" r="6"/><line x1="16" y1="38" x2="38" y2="22"/><line x1="38" y1="22" x2="54" y2="22"/><line x1="54" y1="22" x2="60" y2="48"/><line x1="38" y1="22" x2="42" y2="48"/><line x1="16" y1="40" x2="22" y2="46"/><line x1="22" y1="46" x2="32" y2="46" stroke-dasharray="2,2"/></svg>`,
+ 'wall-posture':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><line x1="50" y1="2" x2="50" y2="74" stroke-width="3" opacity="0.35"/><circle cx="42" cy="12" r="6"/><line x1="48" y1="12" x2="50" y2="12" stroke-dasharray="1,1"/><line x1="42" y1="18" x2="42" y2="46"/><line x1="48" y1="18" x2="50" y2="18"/><line x1="42" y1="26" x2="30" y2="34"/><line x1="42" y1="26" x2="36" y2="44"/><line x1="48" y1="46" x2="50" y2="46"/><line x1="42" y1="46" x2="36" y2="68"/><line x1="42" y1="46" x2="44" y2="68"/><line x1="44" y1="68" x2="50" y2="68"/></svg>`,
+ 'chin-tuck':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><circle cx="28" cy="22" r="7"/><line x1="34" y1="22" x2="44" y2="22" stroke-dasharray="3,2"/><path d="M40 22 L44 18 M40 22 L44 26" stroke-width="2"/><line x1="28" y1="29" x2="28" y2="42"/><line x1="20" y1="34" x2="36" y2="34"/><line x1="28" y1="42" x2="22" y2="56"/><line x1="28" y1="42" x2="34" y2="56"/></svg>`,
+ 'jefferson-curl':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><rect x="6" y="62" width="48" height="6" fill="currentColor" opacity="0.2" stroke-width="1"/><circle cx="30" cy="14" r="6"/><line x1="30" y1="20" x2="32" y2="32"/><line x1="32" y1="32" x2="36" y2="46"/><line x1="36" y1="46" x2="44" y2="58"/><line x1="32" y1="32" x2="22" y2="50"/><line x1="22" y1="50" x2="22" y2="62"/><line x1="44" y1="58" x2="42" y2="62"/><line x1="36" y1="46" x2="22" y2="58"/><circle cx="22" cy="60" r="3" fill="currentColor" opacity="0.4" stroke="none"/></svg>`,
+ 'hanging-knee-raise':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><line x1="2" y1="6" x2="58" y2="6" stroke-width="3.5"/><line x1="14" y1="6" x2="14" y2="14"/><line x1="46" y1="6" x2="46" y2="14"/><circle cx="30" cy="22" r="6"/><line x1="14" y1="14" x2="22" y2="20"/><line x1="46" y1="14" x2="38" y2="20"/><line x1="30" y1="28" x2="30" y2="44"/><line x1="30" y1="44" x2="46" y2="48"/><line x1="46" y1="48" x2="40" y2="62"/><line x1="30" y1="44" x2="14" y2="48"/><line x1="14" y1="48" x2="20" y2="62"/></svg>`,
 }
 
 function getExMeta(ex){
@@ -742,6 +859,22 @@ function markDone(id){
 }
 function getDayDone(dateKey){ return (lsGet(DAY_K)||{})[dateKey]||[] }
 function getWeekDays(){ const days=[],today=new Date(),dow=today.getDay()||7,mon=new Date(today); mon.setDate(today.getDate()-dow+1); for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(localKey(d))} return days }
+function getCategoryStreak(cat){
+ const all=getSessions(); const ids=new Set(all.filter(s=>s.category===cat).map(s=>s.id))
+ const dy=lsGet(DAY_K)||{}; let streak=0; const d=new Date()
+ for(let i=0;i<400;i++){
+  const k=localKey(d); const list=dy[k]||[]
+  const hit=list.some(id=>ids.has(id))
+  if(hit){ streak++; d.setDate(d.getDate()-1); continue }
+  if(i===0){ d.setDate(d.getDate()-1); continue }
+  break
+ }
+ return streak
+}
+function getCategoryCountThisWeek(cat){
+ const all=getSessions(); const ids=new Set(all.filter(s=>s.category===cat).map(s=>s.id))
+ return getWeekDays().reduce((acc,dk)=>acc+(getDayDone(dk).some(id=>ids.has(id))?1:0),0)
+}
 
 // ─── THEME ─────────────────────────────────────────────────────────────────────
 let darkMode = (()=>{ const v=lsGet(DK); return v!==null?v:true })()
@@ -1089,14 +1222,57 @@ function renderHome(){
     }).join('')
    })()}</div>
   </div>
-  <div class="flex gap-0 px-4 mb-5" style="border-bottom:1px solid var(--b2)">
+  <div class="flex gap-0 px-4 mb-5 overflow-x-auto" style="border-bottom:1px solid var(--b2)">
    ${CATS.map(cat=>`
     <button data-action="cat" data-cat="${cat.id}"
-     class="flex-1 pb-2.5 pt-1 text-xs font-bold tracking-wide ${state.cat===cat.id?'tab-active':'tab-inactive'}">
+     class="flex-shrink-0 flex-1 pb-2.5 pt-1 text-xs font-bold tracking-wide whitespace-nowrap ${state.cat===cat.id?'tab-active':'tab-inactive'}">
      ${cat.emoji} ${cat.label}
     </button>
    `).join('')}
   </div>
+  ${state.cat==='extra'?(()=>{
+   const streak=getCategoryStreak('extra'), wkCount=getCategoryCountThisWeek('extra')
+   return `
+   <div class="px-4 mb-4">
+    <div class="rounded-2xl p-4 border" style="background:var(--s1);border-color:var(--b1)">
+     <div class="flex items-center gap-3 mb-3">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl bg-sky-950/40 border border-sky-900">📏</div>
+      <div class="flex-1 min-w-0">
+       <p class="text-[0.55rem] font-black uppercase tracking-widest" style="color:var(--t3)">Optimización de altura</p>
+       <p class="text-base font-bold leading-tight" style="color:var(--t0)">Postura · Descompresión · Alineación</p>
+      </div>
+     </div>
+     <div class="grid grid-cols-2 gap-2 mb-3">
+      <div class="rounded-xl p-2.5 text-center" style="background:var(--s2)">
+       <p class="text-[0.5rem] font-bold uppercase tracking-widest" style="color:var(--t3)">Racha</p>
+       <p class="text-2xl font-black tabular-nums" style="color:var(--t0)">${streak}<span class="text-xs font-semibold" style="color:var(--t3)"> ${streak===1?'día':'días'}</span></p>
+      </div>
+      <div class="rounded-xl p-2.5 text-center" style="background:var(--s2)">
+       <p class="text-[0.5rem] font-bold uppercase tracking-widest" style="color:var(--t3)">Esta semana</p>
+       <p class="text-2xl font-black tabular-nums" style="color:var(--t0)">${wkCount}<span class="text-xs font-semibold" style="color:var(--t3)">/7</span></p>
+      </div>
+     </div>
+     <div class="rounded-xl px-3 py-2.5 border-l-2" style="background:var(--bg);border-color:#0ea5e9">
+      <p class="text-[0.6rem] font-bold uppercase tracking-widest mb-1" style="color:#0ea5e9">Honestidad</p>
+      <p class="text-[0.7rem] leading-relaxed" style="color:var(--t1)">El hueso adulto no crece. Lo que sí ganas con esto: <strong style="color:var(--t0)">recuperar hasta 1–2 cm</strong> que pierdes por mala postura, compresión espinal y desalineación.</p>
+     </div>
+     <div class="grid grid-cols-3 gap-1.5 mt-3">
+      <div class="rounded-lg p-2 text-center" style="background:var(--s2)">
+       <p class="text-base mb-0.5">🌅</p>
+       <p class="text-[0.55rem] font-bold leading-tight" style="color:var(--t1)">Como rutina<br>matinal</p>
+      </div>
+      <div class="rounded-lg p-2 text-center" style="background:var(--s2)">
+       <p class="text-base mb-0.5">🏁</p>
+       <p class="text-[0.55rem] font-bold leading-tight" style="color:var(--t1)">Finisher<br>post-gym</p>
+      </div>
+      <div class="rounded-lg p-2 text-center" style="background:var(--s2)">
+       <p class="text-base mb-0.5">🧘</p>
+       <p class="text-[0.55rem] font-bold leading-tight" style="color:var(--t1)">Sesión<br>independiente</p>
+      </div>
+     </div>
+    </div>
+   </div>`
+  })():''}
   <div class="px-4 flex flex-col gap-3">
    ${sessions.map(s=>{
     const c=ACCENT[s.accent], isDone=done.includes(s.id)
