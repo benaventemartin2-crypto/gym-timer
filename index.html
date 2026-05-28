@@ -63,7 +63,7 @@ input[type=number]{-moz-appearance:textfield;}
 // ─── SESSIONS ──────────────────────────────────────────────────────────────────
 const SESSIONS_SEED = [
  {
-  id:'tennis-prep', category:'tennis', emoji:'🎾', accent:'yellow',
+  id:'tennis-prep', category:'sport', emoji:'🎾', accent:'yellow',
   name:'Activación Pre-Tenis',
   goal:'Preparar hombro, cadera y patrones específicos de tenis',
   duration:'~18 min', load:'baja', optional:false,
@@ -115,7 +115,7 @@ const SESSIONS_SEED = [
   ]
  },
  {
-  id:'golf-prep', category:'golf', emoji:'⛳', accent:'teal',
+  id:'golf-prep', category:'sport', emoji:'⛳', accent:'teal',
   name:'Activación Pre-Golf',
   goal:'Preparar columna torácica, cadera y rotación para el swing',
   duration:'~20 min', load:'baja', optional:false,
@@ -307,6 +307,20 @@ const SESSIONS_SEED = [
       tips:['Core apretado — no arquees la lumbar','La barra pasa justo frente a la cara al subir','Exhala en el esfuerzo'],
       duration:45, sets:4, reps:'6', rest:90, tracked:true, image:'military-press' },
    ]},
+   { name:'Extras (Opcional)', icon:'➕', duration:10, optional:true, exercises:[
+    { name:'Hip Thrust con barra', instruction:'Espalda alta apoyada en banco. Barra en cadera (usa colchoneta). Eleva la cadera apretando glúteos al tope.',
+      tips:['Pausa 1s arriba apretando glúteo','Mentón pegado al pecho — no extiendas el cuello','Es el ejercicio rey para potencia de glúteo'],
+      duration:50, sets:3, reps:'8', rest:90, tracked:true, optional:true, image:'hip-thrust' },
+    { name:'Remo Pendlay', instruction:'Barra en el suelo. Tronco paralelo al suelo. Tira la barra al abdomen y vuelve al suelo cada rep.',
+      tips:['Cada rep parte del suelo — corrige la técnica','Codos apuntan atrás, no hacia los lados','Aprieta escápulas al final del jalón'],
+      duration:45, sets:3, reps:'6', rest:90, tracked:true, optional:true, image:'pendlay-row' },
+    { name:'Sentadilla búlgara', instruction:'Pie trasero sobre banco. Baja en la pierna delantera. Empuja desde el talón.',
+      tips:['Rodilla sobre el pie','Tronco ligeramente inclinado','8 reps por lado'],
+      duration:50, sets:3, reps:'8', rest:60, side:true, tracked:true, optional:true, image:'bulgarian-split-squat' },
+    { name:'Elevación colgado de rodillas', instruction:'Colgado de la barra. Eleva rodillas al pecho. Controla la bajada.',
+      tips:['Sin balanceo — todo desde el core','Si es muy fácil, sube piernas rectas','10 reps lentas'],
+      duration:40, sets:3, reps:'10', rest:60, optional:true, image:'hanging-knee-raise' },
+   ]},
    { name:'Foam Roller', icon:'🪵', duration:8, exercises:[
     { name:'Rodillo — cuádriceps', instruction:'Boca abajo. Rodillo bajo el muslo. Rueda de cadera a rodilla.',
       tips:['Rota la pierna para cubrir todo el tejido','Pausa en zonas de tensión'],
@@ -368,6 +382,20 @@ const SESSIONS_SEED = [
     { name:'Caminata a paso ligero', instruction:'10 minutos de caminata continua a paso rápido pero cómodo. Mueve los brazos activamente.',
       tips:['Moviliza los ácidos grasos liberados durante el HIIT','No pares de golpe — la caminata acelera la recuperación','Respira profundo y rítmico'],
       duration:600, image:'hiit-walk' },
+   ]},
+   { name:'Extras Plyo (Opcional)', icon:'⚡', duration:8, optional:true, exercises:[
+    { name:'Box Jump', instruction:'De pie frente a un cajón. Salto explosivo con doble pierna, aterriza suave arriba. Baja caminando.',
+      tips:['Aterriza con cadera atrás y rodillas flexionadas','Baja caminando — no saltes hacia abajo','5 reps · solo si las rodillas están al 100%'],
+      duration:45, sets:3, reps:'5', rest:90, optional:true, image:'box-jump' },
+    { name:'Broad Jump', instruction:'Salto horizontal hacia adelante con doble pierna. Aterriza absorbiendo. Camina al inicio y repite.',
+      tips:['Aterriza con cadera atrás, rodillas amortiguando','5 saltos máximos — no series largas','Si la rodilla molesta, sáltalo'],
+      duration:50, sets:3, reps:'5', rest:60, optional:true, image:'broad-jump' },
+    { name:'Lateral Bound', instruction:'Salto de un pie al otro lateralmente. Mantén equilibrio 1s al aterrizar antes del siguiente.',
+      tips:['Carga la cadera al absorber — como el split step del tenis','8 saltos por lado','Excelente para reactividad lateral'],
+      duration:45, sets:3, reps:'8', rest:45, side:true, optional:true, image:'lateral-bound' },
+    { name:'Burpee', instruction:'De pie → suelo → flexión → de pie → salto. Cuerpo entero, ritmo continuo.',
+      tips:['Si las muñecas molestan, omite la flexión','8-10 reps · alto coste cardiovascular','Excelente finisher metabólico'],
+      duration:60, sets:3, reps:'10', rest:60, optional:true, image:'burpee' },
    ]},
    { name:'Foam Roller', icon:'🪵', duration:7, exercises:[
     { name:'Rodillo — cuádriceps', instruction:'Boca abajo. Rodillo bajo el muslo. Rueda de cadera a rodilla.',
@@ -440,6 +468,26 @@ const SESSIONS_SEED = [
     { name:'Superserie — Extensión de Tríceps', instruction:'Polea alta o mancuerna. Codos fijos. Extiende completamente. Baja controlado.',
       tips:['Los codos no se mueven — sólo el antebrazo','Completa la extensión para activar toda la cabeza larga','Descansa 60s tras completar la superserie'],
       duration:35, sets:4, reps:'12', rest:60, tracked:true, image:'tricep-extension' },
+   ]},
+   { name:'Extras (Opcional)', icon:'➕', duration:12, optional:true, exercises:[
+    { name:'Extensión de cuádriceps', instruction:'Máquina de extensión. Sube las piernas hasta extensión completa con pausa 1s arriba.',
+      tips:['Aprieta el cuádriceps al tope','Bajada controlada 2s','Aísla el cuádriceps — útil porque esta sesión no entrena pierna'],
+      duration:40, sets:3, reps:'12-15', rest:60, tracked:true, optional:true, image:'leg-extension' },
+    { name:'Curl femoral', instruction:'Máquina de curl femoral tumbado o sentado. Flexiona la rodilla llevando talones a glúteos.',
+      tips:['Aprieta el isquio al final del recorrido','Control en la bajada','Equilibra el trabajo de cuádriceps'],
+      duration:40, sets:3, reps:'12', rest:60, tracked:true, optional:true, image:'leg-curl' },
+    { name:'Patada de glúteo en polea', instruction:'Polea baja en el tobillo. Patada atrás con la pierna extendida. Aprieta arriba.',
+      tips:['Sin balanceo del tronco — solo glúteo','Pausa 1s arriba','12 reps por lado'],
+      duration:40, sets:3, reps:'12', rest:45, side:true, tracked:true, optional:true, image:'glute-kickback' },
+    { name:'Curl martillo', instruction:'Mancuernas en agarre neutro (palmas hacia adentro). Sube alternando. Codos fijos.',
+      tips:['Trabaja braquial y braquiorradial — más volumen al brazo','Codos no se mueven','12 reps controladas'],
+      duration:35, sets:3, reps:'12', rest:45, tracked:true, optional:true, image:'hammer-curl' },
+    { name:'Press francés (skull crusher)', instruction:'Tumbado en banco. Mancuernas o EZ-bar. Baja hacia la frente flexionando solo el codo.',
+      tips:['Los codos no se separan — fijos','Sientes la cabeza larga del tríceps','12 reps controladas'],
+      duration:40, sets:3, reps:'12', rest:60, tracked:true, optional:true, image:'skull-crusher' },
+    { name:'Encogimiento de trapecios', instruction:'Mancuernas a los costados. Eleva los hombros hacia las orejas. Pausa 1s arriba.',
+      tips:['Solo hombros — no rotes ni dobles brazos','Pausa real arriba — sin rebote','15 reps lentas'],
+      duration:35, sets:3, reps:'15', rest:45, tracked:true, optional:true, image:'shrug' },
    ]},
    { name:'Foam Roller', icon:'🪵', duration:6, exercises:[
     { name:'Rodillo — columna torácica', instruction:'Espalda media en el rodillo. Rueda lento T4 a T12. Trabaja el dorsal y romboides usados en remos.',
@@ -615,6 +663,119 @@ const SESSIONS_SEED = [
    ]},
   ]
  },
+ {
+  id:'core-complete', category:'gym', emoji:'🔩', accent:'sky',
+  name:'Zona Media Completa',
+  goal:'Core 360°: estabilizador, anti-rotación y rotación potente — clave para potencia de tenis',
+  duration:'~35 min', load:'media', optional:false,
+  frequency:'1–2x/semana · ideal el día previo a partido de tenis',
+  tags:['core','zona media','tenis','rotacional','anti-rotación'],
+  blocks:[
+   { name:'Calentamiento', icon:'🔥', duration:5, exercises:[
+    { name:'Cat-Cow', instruction:'Cuadrupedia. Articula vértebra por vértebra arqueando y redondeando.',
+      tips:['Inhala al arquear, exhala al redondear','8 reps lentas — activa la columna entera'],
+      duration:50, image:'cat-cow' },
+    { name:'Rotación torácica en cuadrupedia', instruction:'Mano detrás de la cabeza. Abre el codo al techo.',
+      tips:['La cadera no rota — sólo el torso','5 reps por lado — exhala al abrir'],
+      duration:55, side:true, image:'thoracic-rotation-quad' },
+    { name:"World's Greatest Stretch", instruction:'Estocada profunda. Mano al suelo. Abre brazo al techo.',
+      tips:['Combina cadera + rotación torácica','3 reps por lado'],
+      duration:55, side:true, image:'worlds-greatest-stretch' },
+    { name:'Bird Dog (preparatorio)', instruction:'Cuadrupedia. Extiende brazo y pierna contraria. Mantén 2s y alterna.',
+      tips:['Cadera no rota — espalda neutra','6 reps por lado, lentas','Despierta el core profundo'],
+      duration:55, side:true, image:'bird-dog' },
+   ]},
+   { name:'Anti-Extensión', icon:'🔩', duration:8, exercises:[
+    { name:'Plancha frontal', instruction:'Antebrazos en el suelo. Cuerpo recto de talones a cabeza. Mantén la tensión.',
+      tips:['Aprieta glúteos y core simultáneamente','Cadera ni cae ni se levanta — línea recta','Respira normal — no contengas la respiración'],
+      duration:45, sets:3, rest:30, optional:false, image:'front-plank' },
+    { name:'Dead Bug', instruction:'Tumbado. Brazos al techo, rodillas en 90°. Baja brazo y pierna contrarios sin perder la lumbar.',
+      tips:['Lumbar pegada al suelo en todo momento','10 reps alternando — lentas y controladas','Si la lumbar se despega, baja menos'],
+      duration:50, reps:'10', image:'dead-bug' },
+    { name:'Hollow Hold', instruction:'Boca arriba. Brazos y piernas extendidos elevados. Lumbar pegada al suelo. Mantén.',
+      tips:['Si pierdes la lumbar pegada, dobla rodillas','Activa todo el core anterior','3 series de 25–30s'],
+      duration:30, sets:3, rest:25, image:'hollow-hold' },
+    { name:'Plancha con elevación de pierna', instruction:'Plancha. Eleva una pierna 3s, baja, alterna. Cadera estable.',
+      tips:['Cadera no rota al elevar — el trabajo es no compensar','4 reps por lado','Aprieta glúteo de la pierna elevada'],
+      duration:45, reps:'4+4', image:'plank-leg-raise' },
+   ]},
+   { name:'Anti-Rotación', icon:'🎯', duration:8, exercises:[
+    { name:'Pallof Press', instruction:'Polea o banda al costado. Aprieta las manos al pecho y empuja al frente. Resiste la rotación de la banda.',
+      tips:['La banda intenta rotarte — tú la resistes','El trabajo está en NO rotar','10 reps por lado, controladas — patrón clave para tenis'],
+      duration:50, sets:3, reps:'10', rest:30, side:true, tracked:true, image:'pallof-press' },
+    { name:'Plancha con toque de hombro', instruction:'Plancha alta. Toca el hombro contrario sin rotar la cadera.',
+      tips:['Caderas estables — el trabajo es no rotar','8 toques por lado','Pies un poco más anchos = más estable'],
+      duration:45, reps:'8+8', image:'plank-shoulder-tap' },
+    { name:'Bird Dog dinámico', instruction:'Cuadrupedia. Brazo y pierna contrarios extendidos. Lleva codo a rodilla, vuelve a extender.',
+      tips:['Sin balanceo lateral — cadera estable','8 reps por lado','Trabaja core profundo y oblicuos'],
+      duration:55, reps:'8', side:true, image:'bird-dog' },
+    { name:'Side Plank', instruction:'Apoyo en antebrazo lateral. Caderas elevadas. Línea recta de pies a hombros.',
+      tips:['Cadera no cae ni se eleva','Hombro sobre el codo','Progresa de 30s a 60s por lado'],
+      duration:35, sets:2, rest:20, side:true, image:'side-plank' },
+   ]},
+   { name:'Rotación Potencia · Tenis', icon:'🎾', duration:9, exercises:[
+    { name:'Cable Rotation (chop)', instruction:'Polea alta. Tira diagonal desde el hombro hasta la cadera contraria. La cadera lidera, los brazos siguen.',
+      tips:['La potencia sale de la cadera — brazos siguen','10 reps por lado, explosivos pero controlados','Imita el patrón del forehand'],
+      duration:50, sets:3, reps:'10', rest:30, side:true, tracked:true, image:'cable-rotation' },
+    { name:'Med Ball Slam', instruction:'Eleva la pelota arriba, slam fuerte al suelo. Recoge y repite. Cadera y core explosivos.',
+      tips:['Activa el core antes del slam','Velocidad máxima — explosivo','8 reps por serie'],
+      duration:40, sets:3, reps:'8', rest:30, image:'med-ball-slam' },
+    { name:'Med Ball Throw lateral', instruction:'De lado a una pared. Rota la cadera y lanza la pelota a la pared con ambas manos.',
+      tips:['Cadera lidera el lanzamiento — patrón del saque/forehand','8 reps por lado','Recoge la pelota y repite ágil'],
+      duration:50, reps:'8', side:true, image:'med-ball-lateral' },
+    { name:'Side Plank con rotación', instruction:'Side plank. Pasa el brazo libre por debajo del torso y vuelve arriba al techo.',
+      tips:['Cadera no cae al rotar — oblicuo trabaja','6 reps por lado, lentos','Combina anti-caída con rotación'],
+      duration:45, reps:'6', side:true, image:'side-plank-rotation' },
+    { name:'Russian Twist', instruction:'Sentado, pies elevados o en suelo. Rota tronco lado a lado tocando el suelo con las manos (o con peso).',
+      tips:['El movimiento es del torso — no balancees los brazos','20 toques (10 por lado)','Pies elevados = más difícil'],
+      duration:45, reps:'20', image:'russian-twist' },
+   ]},
+   { name:'Estiramiento', icon:'🧘', duration:5, exercises:[
+    { name:'Cobra suave', instruction:'Boca abajo. Manos bajo hombros. Eleva el pecho con codos cerca del torso.',
+      tips:['Extensión torácica — no en lumbar','Glúteos relajados — no aprietes para subir'],
+      duration:40, image:'cobra-stretch' },
+    { name:"Child's Pose", instruction:'Rodillas al suelo, siéntate sobre talones. Brazos al frente. Respira.',
+      tips:['Estira la espalda baja después del core','Respira profundo — relájate'],
+      duration:50, image:'childs-pose' },
+    { name:'Torsión espinal supina', instruction:'Rodillas al pecho y al lado. Hombro contrario pegado al suelo.',
+      tips:['No fuerces — relájate en la torsión','Cada exhala permite más profundidad'],
+      duration:50, side:true, image:'spinal-twist' },
+    { name:'Inclinación lateral con palo', instruction:'De pie. Palo en hombros. Inclina el tronco lateralmente sin rotar. Alterna lados.',
+      tips:['Estira los oblicuos trabajados','Movimiento puro lateral'],
+      duration:40, image:'side-bend' },
+   ]},
+  ]
+ },
+ {
+  id:'log-tennis-train', category:'sport', emoji:'🎾', accent:'yellow',
+  name:'Entreno de Tenis', goal:'Sesión de entrenamiento de tenis',
+  duration:'·', load:'media', optional:false, logOnly:true,
+  frequency:'Pulsa para registrar', tags:['tenis','log'], blocks:[]
+ },
+ {
+  id:'log-tennis-match', category:'sport', emoji:'🏆', accent:'yellow',
+  name:'Partido de Tenis', goal:'Partido competitivo de tenis',
+  duration:'·', load:'alta', optional:false, logOnly:true,
+  frequency:'Pulsa para registrar', tags:['tenis','partido','log'], blocks:[]
+ },
+ {
+  id:'log-tennis-serve', category:'sport', emoji:'🎯', accent:'yellow',
+  name:'Canasto de Saques', goal:'Sesión de canasto de saques',
+  duration:'·', load:'media', optional:false, logOnly:true,
+  frequency:'Pulsa para registrar', tags:['tenis','saque','log'], blocks:[]
+ },
+ {
+  id:'log-golf-range', category:'sport', emoji:'⛳', accent:'teal',
+  name:'Práctica de Golf', goal:'Sesión de práctica en el campo de prácticas',
+  duration:'·', load:'baja', optional:false, logOnly:true,
+  frequency:'Pulsa para registrar', tags:['golf','practica','log'], blocks:[]
+ },
+ {
+  id:'log-golf-course', category:'sport', emoji:'🏌️', accent:'teal',
+  name:'Vuelta de Golf', goal:'Vuelta de golf en cancha',
+  duration:'·', load:'media', optional:false, logOnly:true,
+  frequency:'Pulsa para registrar', tags:['golf','cancha','log'], blocks:[]
+ },
 ]
 
 // ─── CONSTANTS ─────────────────────────────────────────────────────────────────
@@ -629,8 +790,7 @@ const ACCENT = {
 }
 const CATS = [
  { id:'gym',      label:'Gym',         emoji:'🏋️' },
- { id:'tennis',   label:'Pre-Tenis',   emoji:'🎾' },
- { id:'golf',     label:'Pre-Golf',    emoji:'⛳' },
+ { id:'sport',    label:'Pre-Deporte', emoji:'🎾' },
  { id:'mobility', label:'Movilidad',   emoji:'🧘' },
  { id:'extra',    label:'Postura',     emoji:'📏' },
 ]
@@ -749,6 +909,20 @@ const EXERCISE_META = {
  'chin-tuck':              { visualId:'posture',  bodyZone:'cervicales · suboccipitales',        feel:'mentón hacia atrás — corrige cuello adelantado por pantalla' },
  'jefferson-curl':         { visualId:'stretch',  bodyZone:'cadena posterior · columna entera',  feel:'articula vértebra por vértebra — peso debe ser MUY liviano' },
  'hanging-knee-raise':     { visualId:'decompression', bodyZone:'core · descompresión',          feel:'controla la subida y bajada — sin balanceo' },
+ 'front-plank':            { visualId:'plank',    bodyZone:'core anterior · estabilizador',    feel:'línea recta de talones a cabeza — aprieta glúteos y core a la vez' },
+ 'hollow-hold':            { visualId:'plank',    bodyZone:'core anterior profundo',           feel:'lumbar pegada al suelo — todo el frente del torso activado' },
+ 'plank-leg-raise':        { visualId:'plank',    bodyZone:'core · glúteo · estabilidad',      feel:'la cadera no rota al elevar — ahí está el trabajo real' },
+ 'side-plank':             { visualId:'plank',    bodyZone:'oblicuos · core lateral',          feel:'cadera no cae ni se eleva — línea recta y oblicuo apretado' },
+ 'russian-twist':          { visualId:'rotation', bodyZone:'oblicuos · core rotacional',       feel:'rota el torso, no balancees los brazos — control en cada toque' },
+ 'med-ball-lateral':       { visualId:'rotation', bodyZone:'core rotacional · cadena cinética',feel:'la cadera lidera el lanzamiento — patrón del saque de tenis' },
+ 'pendlay-row':            { visualId:'pull',     bodyZone:'dorsal · romboides · espalda alta',feel:'cada rep parte del suelo — codos atrás, escápulas se juntan' },
+ 'leg-extension':          { visualId:'squat',    bodyZone:'cuádriceps',                       feel:'aprieta el cuádriceps al tope con pausa 1s — bajada controlada' },
+ 'leg-curl':               { visualId:'hinge',    bodyZone:'isquiotibiales',                   feel:'sientes el isquio al cerrar — control en la bajada' },
+ 'glute-kickback':         { visualId:'bridge',   bodyZone:'glúteo mayor',                     feel:'solo glúteo trabaja — sin balanceo del tronco' },
+ 'hammer-curl':            { visualId:'pull',     bodyZone:'braquial · braquiorradial',        feel:'agarre neutro — más volumen al brazo que el curl tradicional' },
+ 'skull-crusher':          { visualId:'push',     bodyZone:'tríceps · cabeza larga',           feel:'codos fijos — la cabeza larga del tríceps hace el trabajo' },
+ 'shrug':                  { visualId:'pull',     bodyZone:'trapecio superior',                feel:'solo hombros suben — sin rotación ni doblar brazos' },
+ 'burpee':                 { visualId:'jump',     bodyZone:'full body · cardio',               feel:'cuerpo entero a ritmo continuo — finisher metabólico' },
 }
 
 // ─── FIGURE MAP ────────────────────────────────────────────────────────────────
@@ -815,6 +989,27 @@ const FIGURE_MAP = {
  'chin-tuck':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><circle cx="28" cy="22" r="7"/><line x1="34" y1="22" x2="44" y2="22" stroke-dasharray="3,2"/><path d="M40 22 L44 18 M40 22 L44 26" stroke-width="2"/><line x1="28" y1="29" x2="28" y2="42"/><line x1="20" y1="34" x2="36" y2="34"/><line x1="28" y1="42" x2="22" y2="56"/><line x1="28" y1="42" x2="34" y2="56"/></svg>`,
  'jefferson-curl':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><rect x="6" y="62" width="48" height="6" fill="currentColor" opacity="0.2" stroke-width="1"/><circle cx="30" cy="14" r="6"/><line x1="30" y1="20" x2="32" y2="32"/><line x1="32" y1="32" x2="36" y2="46"/><line x1="36" y1="46" x2="44" y2="58"/><line x1="32" y1="32" x2="22" y2="50"/><line x1="22" y1="50" x2="22" y2="62"/><line x1="44" y1="58" x2="42" y2="62"/><line x1="36" y1="46" x2="22" y2="58"/><circle cx="22" cy="60" r="3" fill="currentColor" opacity="0.4" stroke="none"/></svg>`,
  'hanging-knee-raise':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><line x1="2" y1="6" x2="58" y2="6" stroke-width="3.5"/><line x1="14" y1="6" x2="14" y2="14"/><line x1="46" y1="6" x2="46" y2="14"/><circle cx="30" cy="22" r="6"/><line x1="14" y1="14" x2="22" y2="20"/><line x1="46" y1="14" x2="38" y2="20"/><line x1="30" y1="28" x2="30" y2="44"/><line x1="30" y1="44" x2="46" y2="48"/><line x1="46" y1="48" x2="40" y2="62"/><line x1="30" y1="44" x2="14" y2="48"/><line x1="14" y1="48" x2="20" y2="62"/></svg>`,
+ 'front-plank':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="14" cy="22" r="6"/><line x1="20" y1="24" x2="62" y2="38"/><line x1="14" y1="28" x2="14" y2="46"/><line x1="20" y1="24" x2="24" y2="46"/><line x1="62" y1="38" x2="62" y2="46"/><line x1="54" y1="36" x2="56" y2="46"/></svg>`,
+ 'hollow-hold':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="48" x2="72" y2="48" stroke-width="1.5" opacity="0.3"/><circle cx="22" cy="20" r="6"/><line x1="22" y1="26" x2="38" y2="34"/><line x1="22" y1="20" x2="6" y2="6"/><line x1="22" y1="20" x2="14" y2="6"/><line x1="38" y1="34" x2="58" y2="22"/><line x1="58" y1="22" x2="66" y2="6"/><line x1="58" y1="22" x2="72" y2="14"/></svg>`,
+ 'plank-leg-raise':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="14" cy="20" r="6"/><line x1="20" y1="22" x2="60" y2="32"/><line x1="14" y1="26" x2="14" y2="46"/><line x1="20" y1="22" x2="24" y2="46"/><line x1="60" y1="32" x2="68" y2="14"/><line x1="60" y1="32" x2="58" y2="46"/></svg>`,
+ 'side-plank':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="62" cy="14" r="6"/><line x1="56" y1="18" x2="14" y2="46"/><line x1="14" y1="46" x2="14" y2="34"/><line x1="62" y1="20" x2="64" y2="34"/><line x1="62" y1="14" x2="68" y2="2"/></svg>`,
+ 'side-plank-rotation':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="62" cy="18" r="6"/><line x1="56" y1="22" x2="14" y2="46"/><line x1="14" y1="46" x2="14" y2="36"/><line x1="56" y1="22" x2="40" y2="14" stroke-dasharray="3,2"/><line x1="62" y1="22" x2="68" y2="6"/></svg>`,
+ 'russian-twist':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><line x1="4" y1="60" x2="72" y2="60" stroke-width="1.5" opacity="0.3"/><circle cx="38" cy="12" r="6"/><line x1="38" y1="18" x2="40" y2="36"/><line x1="38" y1="24" x2="20" y2="32"/><line x1="38" y1="24" x2="56" y2="32"/><line x1="40" y1="36" x2="62" y2="50"/><line x1="40" y1="36" x2="18" y2="50"/><path d="M14 32 Q38 28 62 32" fill="none" stroke-dasharray="3,2" opacity="0.6"/></svg>`,
+ 'pallof-press':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><circle cx="46" cy="14" r="6"/><line x1="46" y1="20" x2="46" y2="46"/><line x1="46" y1="26" x2="68" y2="26"/><line x1="46" y1="26" x2="30" y2="26"/><line x1="30" y1="26" x2="6" y2="26" stroke-dasharray="3,2"/><line x1="46" y1="46" x2="36" y2="56"/><line x1="46" y1="46" x2="56" y2="56"/></svg>`,
+ 'dead-bug':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="48" x2="72" y2="48" stroke-width="1.5" opacity="0.3"/><circle cx="12" cy="34" r="6"/><line x1="18" y1="34" x2="46" y2="34"/><line x1="20" y1="32" x2="36" y2="14"/><line x1="22" y1="36" x2="38" y2="40"/><line x1="46" y1="34" x2="62" y2="18"/><line x1="46" y1="34" x2="68" y2="44"/></svg>`,
+ 'bird-dog':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="20" cy="22" r="6"/><line x1="24" y1="24" x2="52" y2="32"/><line x1="20" y1="26" x2="14" y2="46"/><line x1="20" y1="26" x2="28" y2="46"/><line x1="52" y1="32" x2="60" y2="46"/><line x1="52" y1="32" x2="68" y2="18"/></svg>`,
+ 'plank-shoulder-tap':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="1.5" opacity="0.3"/><circle cx="14" cy="14" r="6"/><line x1="20" y1="18" x2="64" y2="36"/><line x1="14" y1="20" x2="14" y2="46"/><line x1="22" y1="22" x2="32" y2="20"/><line x1="64" y1="36" x2="62" y2="46"/><line x1="56" y1="34" x2="58" y2="46"/></svg>`,
+ 'med-ball-slam':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><circle cx="32" cy="14" r="6"/><line x1="32" y1="20" x2="32" y2="44"/><line x1="32" y1="24" x2="28" y2="6"/><line x1="32" y1="24" x2="36" y2="6"/><circle cx="32" cy="4" r="4" fill="currentColor" opacity="0.4" stroke="none"/><circle cx="32" cy="62" r="5" fill="currentColor" opacity="0.3" stroke="none"/><line x1="32" y1="44" x2="22" y2="68"/><line x1="32" y1="44" x2="42" y2="68"/></svg>`,
+ 'cable-rotation':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><circle cx="32" cy="14" r="6"/><line x1="32" y1="20" x2="38" y2="42"/><line x1="34" y1="28" x2="56" y2="20"/><line x1="56" y1="20" x2="68" y2="8" stroke-dasharray="3,2"/><line x1="34" y1="28" x2="14" y2="38"/><line x1="38" y1="42" x2="26" y2="64"/><line x1="38" y1="42" x2="48" y2="64"/></svg>`,
+ 'med-ball-lateral':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><line x1="62" y1="2" x2="62" y2="70" stroke-width="2" opacity="0.3"/><circle cx="22" cy="18" r="6"/><line x1="22" y1="24" x2="24" y2="46"/><line x1="22" y1="28" x2="44" y2="32"/><line x1="44" y1="32" x2="56" y2="26"/><circle cx="56" cy="26" r="4" fill="currentColor" opacity="0.4" stroke="none"/><line x1="24" y1="46" x2="14" y2="68"/><line x1="24" y1="46" x2="34" y2="68"/></svg>`,
+ 'pendlay-row':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="50" x2="72" y2="50" stroke-width="3.5"/><rect x="2" y="46" width="5" height="8" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><rect x="69" y="46" width="5" height="8" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><circle cx="18" cy="14" r="6"/><line x1="22" y1="18" x2="56" y2="22"/><line x1="36" y1="22" x2="36" y2="50"/><line x1="50" y1="22" x2="50" y2="50"/><line x1="56" y1="22" x2="38" y2="36"/></svg>`,
+ 'leg-extension':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="6" y1="46" x2="42" y2="46" stroke-width="3" opacity="0.3"/><circle cx="14" cy="20" r="6"/><line x1="20" y1="22" x2="36" y2="34"/><line x1="36" y1="34" x2="36" y2="44"/><line x1="36" y1="34" x2="64" y2="22"/><line x1="64" y1="22" x2="68" y2="14"/></svg>`,
+ 'leg-curl':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="6" y1="46" x2="60" y2="46" stroke-width="3" opacity="0.3"/><circle cx="62" cy="22" r="6"/><line x1="56" y1="24" x2="20" y2="32"/><line x1="20" y1="32" x2="14" y2="14"/><line x1="14" y1="14" x2="6" y2="10"/></svg>`,
+ 'glute-kickback':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="46" x2="72" y2="46" stroke-width="1.5" opacity="0.3"/><circle cx="22" cy="14" r="6"/><line x1="26" y1="18" x2="42" y2="26"/><line x1="22" y1="20" x2="22" y2="42"/><line x1="42" y1="26" x2="68" y2="26"/><line x1="42" y1="26" x2="50" y2="46"/></svg>`,
+ 'hammer-curl':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><circle cx="30" cy="10" r="6"/><line x1="30" y1="16" x2="30" y2="42"/><line x1="30" y1="24" x2="18" y2="44"/><line x1="30" y1="24" x2="42" y2="44"/><rect x="14" y="42" width="8" height="6" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><rect x="38" y="42" width="8" height="6" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><line x1="30" y1="42" x2="20" y2="64"/><line x1="30" y1="42" x2="40" y2="64"/></svg>`,
+ 'skull-crusher':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="6" y1="46" x2="70" y2="46" stroke-width="1.5" opacity="0.3"/><circle cx="14" cy="34" r="6"/><line x1="20" y1="34" x2="48" y2="38"/><line x1="48" y1="38" x2="42" y2="16"/><line x1="48" y1="38" x2="56" y2="16"/><line x1="40" y1="14" x2="58" y2="14" stroke-width="3"/></svg>`,
+ 'shrug':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><circle cx="30" cy="10" r="6"/><line x1="30" y1="16" x2="30" y2="42"/><line x1="30" y1="22" x2="14" y2="20"/><line x1="30" y1="22" x2="46" y2="20"/><line x1="14" y1="20" x2="12" y2="54"/><line x1="46" y1="20" x2="48" y2="54"/><rect x="8" y="54" width="10" height="6" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><rect x="42" y="54" width="10" height="6" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><line x1="30" y1="42" x2="22" y2="64"/><line x1="30" y1="42" x2="38" y2="64"/></svg>`,
+ 'burpee':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><line x1="4" y1="68" x2="72" y2="68" stroke-width="1.5" opacity="0.3"/><circle cx="38" cy="8" r="6"/><line x1="38" y1="14" x2="38" y2="38"/><line x1="38" y1="22" x2="22" y2="14"/><line x1="38" y1="22" x2="54" y2="14"/><line x1="38" y1="38" x2="26" y2="62"/><line x1="38" y1="38" x2="50" y2="62"/><path d="M22 14 Q14 4 22 0" stroke-dasharray="3,2" fill="none" opacity="0.5"/><path d="M54 14 Q62 4 54 0" stroke-dasharray="3,2" fill="none" opacity="0.5"/></svg>`,
 }
 
 function getExMeta(ex){
@@ -850,7 +1045,8 @@ function getSessions(){
  if(!stored) return SESSIONS_SEED
  const ids=new Set(stored.map(s=>s.id))
  const missing=SESSIONS_SEED.filter(s=>!ids.has(s.id))
- return missing.length?[...stored,...missing]:stored
+ const all=missing.length?[...stored,...missing]:stored
+ return all.map(s=>(s.category==='tennis'||s.category==='golf')?{...s,category:'sport'}:s)
 }
 function saveSessionById(sess){ const all=getSessions().map(s=>s.id===sess.id?sess:s); lsSet(SK,all) }
 function getWeight(n){ const d=lsGet(WK)||{}; return d[n]||null }
@@ -862,6 +1058,18 @@ function completedThisWeek(){ return (lsGet(HK)||{})[weekKey()]||[] }
 function markDone(id){
  const h=lsGet(HK)||{},w=weekKey(); if(!h[w])h[w]=[]; if(!h[w].includes(id))h[w].push(id); lsSet(HK,h)
  const dy=lsGet(DAY_K)||{},t=todayKey(); if(!dy[t])dy[t]=[]; if(!dy[t].includes(id))dy[t].push(id); lsSet(DAY_K,dy)
+}
+function unmarkToday(id){
+ const dy=lsGet(DAY_K)||{},t=todayKey()
+ if(dy[t]) dy[t]=dy[t].filter(x=>x!==id)
+ lsSet(DAY_K,dy)
+ const h=lsGet(HK)||{},w=weekKey()
+ if(h[w]){
+  const week=getWeekDays()
+  const stillThisWeek=week.some(dk=>(dy[dk]||[]).includes(id))
+  if(!stillThisWeek) h[w]=h[w].filter(x=>x!==id)
+  lsSet(HK,h)
+ }
 }
 function getDayDone(dateKey){ return (lsGet(DAY_K)||{})[dateKey]||[] }
 function getWeekDays(){ const days=[],today=new Date(),dow=today.getDay()||7,mon=new Date(today); mon.setDate(today.getDate()-dow+1); for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(localKey(d))} return days }
@@ -1050,6 +1258,12 @@ function restart(){
  startTimer(); render()
 }
 function goHome(){ stopTimer(); wakeLock?.release(); state.screen='home'; state.isRunning=false; render() }
+function logSport(id){
+ const todayList=getDayDone(todayKey())
+ if(todayList.includes(id)){ unmarkToday(id); vibe([30]) }
+ else { markDone(id); vibe([60,40,60]) }
+ render()
+}
 function goSession(){ state.isRunning=false; state.screen='session'; render() }
 function setCat(c){ state.cat=c; render() }
 function openWeightModal(name,bi,ei){
@@ -1196,7 +1410,7 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;
 // ─── RENDER HOME ───────────────────────────────────────────────────────────────
 function renderHome(){
  const done=completedThisWeek()
- const sessions=getSessions().filter(s=>s.category===state.cat)
+ const sessions=getSessions().filter(s=>s.category===state.cat&&!s.logOnly)
  const allS=getSessions()
  const todayDone=getDayDone(todayKey()).map(id=>allS.find(s=>s.id===id)).filter(Boolean)
  return `
@@ -1327,8 +1541,50 @@ function renderHome(){
     </button>`
    }).join('')}
   </div>
+  ${state.cat==='sport'?renderSportLog(allS,done):''}
   ${state.showMonth?renderMonthModal():''}
  </div>`
+}
+
+// ─── RENDER SPORT LOG ──────────────────────────────────────────────────────────
+function renderSportLog(allS,done){
+ const tennisLogs=allS.filter(s=>s.logOnly&&s.id.startsWith('log-tennis'))
+ const golfLogs=allS.filter(s=>s.logOnly&&s.id.startsWith('log-golf'))
+ const todayKeyV=todayKey()
+ const todayList=getDayDone(todayKeyV)
+ const logRow=(s)=>{
+  const cc=ACCENT[s.accent]
+  const didToday=todayList.includes(s.id)
+  return `
+   <button data-action="log-sport" data-id="${s.id}"
+    class="w-full text-left rounded-2xl p-3 flex items-center gap-3 border active:scale-[0.98] transition-transform"
+    style="background:var(--s1);border-color:${didToday?cc.ring:'var(--b1)'}">
+    <div class="flex-shrink-0 w-11 h-11 rounded-xl border flex items-center justify-center text-xl ${cc.bg} ${cc.border}">${didToday?'✅':s.emoji}</div>
+    <div class="flex-1 min-w-0">
+     <p class="text-[0.9rem] font-bold leading-tight" style="color:var(--t0)">${esc(s.name)}</p>
+     <p class="text-[0.6rem]" style="color:${didToday?cc.ring:'var(--t3)'}">${didToday?'✓ Registrado hoy · pulsa para deshacer':'Pulsa para registrar en el historial'}</p>
+    </div>
+   </button>`
+ }
+ return `
+  <div class="px-4 mt-6">
+   <p class="text-[0.6rem] font-black uppercase tracking-widest mb-2 px-1" style="color:var(--t3)">Registrar deporte</p>
+   <p class="text-[0.65rem] leading-relaxed mb-3 px-1" style="color:var(--t4)">Toca cuando termines la actividad para guardarla en tu historial diario y mensual.</p>
+   <div class="rounded-2xl p-3 border mb-3" style="background:var(--s2);border-color:var(--b1)">
+    <div class="flex items-center gap-2 mb-2 px-1">
+     <span class="text-base">🎾</span>
+     <p class="text-[0.65rem] font-black uppercase tracking-widest" style="color:var(--t2)">Tenis</p>
+    </div>
+    <div class="flex flex-col gap-2">${tennisLogs.map(logRow).join('')}</div>
+   </div>
+   <div class="rounded-2xl p-3 border" style="background:var(--s2);border-color:var(--b1)">
+    <div class="flex items-center gap-2 mb-2 px-1">
+     <span class="text-base">⛳</span>
+     <p class="text-[0.65rem] font-black uppercase tracking-widest" style="color:var(--t2)">Golf</p>
+    </div>
+    <div class="flex flex-col gap-2">${golfLogs.map(logRow).join('')}</div>
+   </div>
+  </div>`
 }
 
 // ─── RENDER MONTH MODAL ────────────────────────────────────────────────────────
@@ -1342,8 +1598,8 @@ function renderMonthModal(){
  const dnames=['L','M','X','J','V','S','D']
  const firstWd=days[0]?.weekday||1
  const blanks=Array.from({length:firstWd-1})
- const catLabels={ gym:'Gym', tennis:'Tenis', golf:'Golf', mobility:'Movilidad', extra:'Postura' }
- const catEmojis={ gym:'🏋️', tennis:'🎾', golf:'⛳', mobility:'🧘', extra:'📏' }
+ const catLabels={ gym:'Gym', sport:'Deporte', tennis:'Tenis', golf:'Golf', mobility:'Movilidad', extra:'Postura' }
+ const catEmojis={ gym:'🏋️', sport:'🎾⛳', tennis:'🎾', golf:'⛳', mobility:'🧘', extra:'📏' }
  const isCurrentMonth=state.monthOffset===0
  return `
  <div class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,0.7)" data-action="close-month-bg">
@@ -2301,6 +2557,7 @@ function bindEvents(){
    if(a==='close-weight-bg'&&e.target!==el) return
    if(a==='img-picker-close-bg'&&e.target!==el) return
    if(a==='cat')              setCat(el.dataset.cat)
+   else if(a==='log-sport')   logSport(el.dataset.id)
    else if(a==='open-month')  { state.showMonth=true; state.monthOffset=0; render() }
    else if(a==='close-month'||a==='close-month-bg'){ if(a==='close-month-bg'&&e.target!==el) return; state.showMonth=false; render() }
    else if(a==='month-prev')  { state.monthOffset--; render() }
