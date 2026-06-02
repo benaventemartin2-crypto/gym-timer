@@ -1337,6 +1337,31 @@ function restart(){
  startTimer(); render()
 }
 function goHome(){ stopTimer(); wakeLock?.release(); state.screen='home'; state.isRunning=false; render() }
+function exportData(){
+ const data={weights:lsGet(WK),history:lsGet(HK),sessions:lsGet(SK),days:lsGet(DAY_K),dark:lsGet(DK),exportedAt:new Date().toISOString(),v:1}
+ const json=JSON.stringify(data)
+ const done=()=>alert('✓ Backup copiado. Pégalo en Notas o un email para guardarlo.')
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(json).then(done).catch(()=>prompt('Copia este texto y guárdalo:',json))
+ } else {
+  prompt('Copia este texto y guárdalo:',json)
+ }
+}
+function importData(){
+ const text=prompt('Pega tu backup JSON aquí:')
+ if(!text) return
+ try{
+  const data=JSON.parse(text)
+  if(!confirm('¿Restaurar este backup? Sobrescribe los datos actuales.')) return
+  if(data.weights!==undefined&&data.weights!==null) lsSet(WK,data.weights)
+  if(data.history!==undefined&&data.history!==null) lsSet(HK,data.history)
+  if(data.sessions!==undefined&&data.sessions!==null) lsSet(SK,data.sessions)
+  if(data.days!==undefined&&data.days!==null) lsSet(DAY_K,data.days)
+  if(data.dark!==undefined&&data.dark!==null) lsSet(DK,data.dark)
+  alert('✓ Backup restaurado')
+  state.showMonth=false; render()
+ }catch(e){ alert('✗ Backup inválido — revisa el texto pegado') }
+}
 function logSport(id){
  const todayList=getDayDone(todayKey())
  if(todayList.includes(id)){ unmarkToday(id); vibe([30]) }
@@ -1763,6 +1788,16 @@ function renderMonthModal(){
     <p class="text-3xl mb-2 opacity-40">📅</p>
     <p class="text-xs" style="color:var(--t3)">Sin sesiones registradas en este mes</p>
    </div>`}
+   <div class="px-4 mb-3">
+    <p class="text-[0.55rem] font-bold uppercase tracking-widest mb-2" style="color:var(--t3)">Backup</p>
+    <div class="flex gap-2">
+     <button data-action="export-data" class="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
+      style="background:var(--bg);border-color:var(--b2);color:var(--t1)">📋 Copiar backup</button>
+     <button data-action="import-data" class="flex-1 py-2.5 rounded-xl text-xs font-semibold border"
+      style="background:var(--bg);border-color:var(--b2);color:var(--t1)">↩ Restaurar</button>
+    </div>
+    <p class="text-[0.55rem] mt-1.5 leading-relaxed" style="color:var(--t4)">Copia el JSON y guárdalo en Notas. Restaurar pega ese JSON y recupera todo.</p>
+   </div>
    <div class="px-4 pb-6">
     <button data-action="close-month" class="w-full py-3 rounded-2xl text-sm font-semibold border"
      style="background:var(--bg);border-color:var(--b2);color:var(--t1)">Cerrar</button>
@@ -2637,6 +2672,8 @@ function bindEvents(){
    if(a==='img-picker-close-bg'&&e.target!==el) return
    if(a==='cat')              setCat(el.dataset.cat)
    else if(a==='log-sport')   logSport(el.dataset.id)
+   else if(a==='export-data') exportData()
+   else if(a==='import-data') importData()
    else if(a==='open-month')  { state.showMonth=true; state.monthOffset=0; render() }
    else if(a==='close-month'||a==='close-month-bg'){ if(a==='close-month-bg'&&e.target!==el) return; state.showMonth=false; render() }
    else if(a==='month-prev')  { state.monthOffset--; render() }
