@@ -493,7 +493,16 @@ const SESSIONS_SEED = [
       tips:['Los codos no se mueven — sólo el antebrazo','Completa la extensión para activar toda la cabeza larga','Descansa 60s tras completar la superserie'],
       duration:35, sets:4, reps:'12', rest:60, tracked:true, image:'tricep-extension' },
    ]},
-   { name:'Extras (Opcional)', icon:'➕', duration:12, optional:true, exercises:[
+   { name:'Extras (Opcional)', icon:'➕', duration:14, optional:true, exercises:[
+    { name:'Sentadilla búlgara', instruction:'Pie trasero sobre banco. Baja en la pierna delantera controlado. Empuja desde el talón.',
+      tips:['Rodilla sobre el pie — no hacia adentro','Tronco ligeramente inclinado para mayor activación de glúteo','10 reps por lado · siente el cuádriceps y glúteo'],
+      duration:50, sets:3, reps:'10', rest:60, side:true, tracked:true, optional:true, image:'bulgarian-split-squat' },
+    { name:'RDL unilateral', instruction:'De pie sobre una pierna. Mancuerna o kettlebell en la mano contraria. Bisagra de cadera bajando la pesa hasta media espinilla. Sube.',
+      tips:['Cadera atrás, espalda neutra — el isquio se estira','Pierna libre extendida atrás como contrapeso','10 reps por lado · cadena posterior + equilibrio'],
+      duration:50, sets:3, reps:'10', rest:60, side:true, tracked:true, optional:true, image:'rdl-unilateral' },
+    { name:'Step Up con peso', instruction:'Mancuerna en cada mano. Sube a un cajón/banco a la altura de la rodilla con una pierna. Empuja desde el talón. Baja controlado.',
+      tips:['Empuja con el talón del pie de arriba — no impulses con la pierna de abajo','Tronco vertical, sin balanceo','10 reps por lado · cuádriceps y glúteo funcional'],
+      duration:50, sets:3, reps:'10', rest:45, side:true, tracked:true, optional:true, image:'step-up' },
     { name:'Extensión de cuádriceps', instruction:'Máquina de extensión. Sube las piernas hasta extensión completa con pausa 1s arriba.',
       tips:['Aprieta el cuádriceps al tope','Bajada controlada 2s','Aísla el cuádriceps — útil porque esta sesión no entrena pierna'],
       duration:40, sets:3, reps:'12-15', rest:60, tracked:true, optional:true, image:'leg-extension' },
@@ -744,9 +753,12 @@ const SESSIONS_SEED = [
       duration:35, sets:2, rest:20, side:true, image:'side-plank' },
    ]},
    { name:'Rotación Potencia · Tenis', icon:'🎾', duration:9, exercises:[
-    { name:'Cable Rotation (chop)', instruction:'Polea alta. Tira diagonal desde el hombro hasta la cadera contraria. La cadera lidera, los brazos siguen.',
+    { name:'Cable Chop', instruction:'Polea alta. Tira diagonal desde el hombro hasta la cadera contraria. La cadera lidera, los brazos siguen.',
       tips:['La potencia sale de la cadera — brazos siguen','10 reps por lado, explosivos pero controlados','Imita el patrón del forehand'],
       duration:50, sets:3, reps:'10', rest:30, side:true, tracked:true, image:'cable-rotation' },
+    { name:'Landmine Rotation', instruction:'Barra en pivote de landmine. Sujeta el extremo libre con ambas manos al frente. Rota llevando la barra de un lado al otro arrastrando la cadera.',
+      tips:['Cadera lidera la rotación — brazos solo siguen','Pies plantados — el pivote viene de la cadera, no del paso','8 reps por lado · potencia rotacional pura de tenis y golf'],
+      duration:50, sets:3, reps:'8', rest:45, side:true, tracked:true, image:'landmine-rotation' },
     { name:'Med Ball Slam', instruction:'Eleva la pelota arriba, slam fuerte al suelo. Recoge y repite. Cadera y core explosivos.',
       tips:['Activa el core antes del slam','Velocidad máxima — explosivo','8 reps por serie'],
       duration:40, sets:3, reps:'8', rest:30, image:'med-ball-slam' },
@@ -959,6 +971,9 @@ const EXERCISE_META = {
  'hip-cars':               { visualId:'mobility', bodyZone:'cadera (articular)',                feel:'máxima amplitud activa — sin compensar con la lumbar' },
  'hip-internal-rotation':  { visualId:'mobility', bodyZone:'rotación interna cadera',           feel:'apertura interna desde la cadera — clave para downswing de golf' },
  'lat-overhead-stretch':   { visualId:'stretch',  bodyZone:'dorsal · oblicuo · costado',        feel:'estiramiento del dorsal y costado — clave para backswing y saque' },
+ 'rdl-unilateral':         { visualId:'hinge',    bodyZone:'isquios · glúteo · estabilizadores', feel:'isquio se estira al bajar — cadera atrás, equilibrio del pie de apoyo' },
+ 'step-up':                { visualId:'lunge',    bodyZone:'cuádriceps · glúteo · estabilidad',  feel:'empuja con el talón del pie de arriba — sin impulso de la pierna de abajo' },
+ 'landmine-rotation':      { visualId:'rotation', bodyZone:'core rotacional · cadena cinética',  feel:'cadera lidera la rotación — potencia pura del swing y forehand' },
 }
 
 // ─── FIGURE MAP ────────────────────────────────────────────────────────────────
@@ -1052,6 +1067,9 @@ const FIGURE_MAP = {
  'hip-cars':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><line x1="4" y1="68" x2="72" y2="68" stroke-width="1.5" opacity="0.3"/><circle cx="20" cy="14" r="6"/><line x1="20" y1="20" x2="20" y2="48"/><line x1="20" y1="28" x2="34" y2="32"/><line x1="20" y1="28" x2="8" y2="34"/><line x1="20" y1="48" x2="14" y2="68"/><line x1="20" y1="48" x2="42" y2="32"/><line x1="42" y1="32" x2="62" y2="22"/><path d="M42 32 Q66 30 62 50" stroke-dasharray="3,2" fill="none" opacity="0.7"/></svg>`,
  'hip-internal-rotation':`<svg viewBox="0 0 76 60" width="70" height="56" ${S}><line x1="4" y1="52" x2="72" y2="52" stroke-width="1.5" opacity="0.3"/><circle cx="14" cy="14" r="6"/><line x1="20" y1="18" x2="38" y2="34"/><line x1="38" y1="34" x2="14" y2="34"/><line x1="38" y1="34" x2="58" y2="50"/><line x1="14" y1="34" x2="14" y2="50"/><path d="M38 24 Q48 26 50 36" stroke-dasharray="2,2" fill="none" opacity="0.7"/></svg>`,
  'lat-overhead-stretch':`<svg viewBox="0 0 60 76" width="56" height="70" ${S}><circle cx="22" cy="14" r="6"/><line x1="22" y1="20" x2="32" y2="44"/><line x1="22" y1="22" x2="40" y2="6"/><line x1="22" y1="22" x2="50" y2="14"/><line x1="50" y1="14" x2="42" y2="6"/><line x1="32" y1="44" x2="24" y2="66"/><line x1="32" y1="44" x2="40" y2="66"/></svg>`,
+ 'rdl-unilateral':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><line x1="4" y1="70" x2="72" y2="70" stroke-width="1.5" opacity="0.3"/><circle cx="20" cy="20" r="6"/><line x1="20" y1="26" x2="48" y2="36"/><line x1="20" y1="26" x2="30" y2="44"/><line x1="48" y1="36" x2="50" y2="56"/><circle cx="50" cy="60" r="4" fill="currentColor" opacity="0.4" stroke="none"/><line x1="30" y1="44" x2="30" y2="70"/><line x1="48" y1="36" x2="66" y2="14"/></svg>`,
+ 'step-up':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><rect x="40" y="40" width="32" height="30" fill="currentColor" opacity="0.15" stroke="currentColor" stroke-width="1.5"/><circle cx="34" cy="12" r="6"/><line x1="34" y1="18" x2="34" y2="42"/><line x1="34" y1="24" x2="20" y2="34"/><line x1="34" y1="24" x2="48" y2="34"/><rect x="14" y="34" width="8" height="4" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><rect x="46" y="34" width="8" height="4" rx="1" fill="currentColor" opacity="0.4" stroke="none"/><line x1="34" y1="42" x2="48" y2="42"/><line x1="48" y1="42" x2="48" y2="62"/><line x1="34" y1="42" x2="28" y2="68"/></svg>`,
+ 'landmine-rotation':`<svg viewBox="0 0 76 76" width="70" height="70" ${S}><circle cx="6" cy="68" r="3" fill="currentColor" opacity="0.5" stroke="none"/><line x1="6" y1="68" x2="38" y2="36" stroke-width="3"/><circle cx="38" cy="14" r="6"/><line x1="38" y1="20" x2="38" y2="48"/><line x1="38" y1="28" x2="56" y2="30"/><line x1="38" y1="28" x2="20" y2="30" stroke-dasharray="3,2" opacity="0.6"/><line x1="38" y1="48" x2="28" y2="70"/><line x1="38" y1="48" x2="48" y2="70"/><path d="M20 30 Q38 22 56 30" stroke-dasharray="3,2" opacity="0.5" fill="none"/></svg>`,
 }
 
 function getExMeta(ex){
