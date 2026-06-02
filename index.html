@@ -1103,10 +1103,32 @@ function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)) }catch{} }
 function getSessions(){
  const stored=lsGet(SK)
  if(!stored) return SESSIONS_SEED
- const ids=new Set(stored.map(s=>s.id))
- const missing=SESSIONS_SEED.filter(s=>!ids.has(s.id))
- const all=missing.length?[...stored,...missing]:stored
- return all.map(s=>(s.category==='tennis'||s.category==='golf')?{...s,category:'sport'}:s)
+ const tweaks=new Map()
+ stored.forEach(s=>{
+  s.blocks?.forEach(blk=>blk.exercises?.forEach(ex=>{
+   const t={}
+   if(ex.sets!==undefined) t.sets=ex.sets
+   if(ex.reps!==undefined) t.reps=ex.reps
+   if(ex.rest!==undefined) t.rest=ex.rest
+   if(Object.keys(t).length) tweaks.set(ex.name,t)
+  }))
+ })
+ const seedIds=new Set(SESSIONS_SEED.map(s=>s.id))
+ const result=SESSIONS_SEED.map(seed=>{
+  const sess=JSON.parse(JSON.stringify(seed))
+  sess.blocks.forEach(blk=>blk.exercises.forEach(ex=>{
+   const t=tweaks.get(ex.name)
+   if(t) Object.assign(ex,t)
+  }))
+  return sess
+ })
+ stored.forEach(s=>{
+  if(!seedIds.has(s.id)){
+   const migrated=(s.category==='tennis'||s.category==='golf')?{...s,category:'sport'}:s
+   result.push(migrated)
+  }
+ })
+ return result
 }
 function saveSessionById(sess){ const all=getSessions().map(s=>s.id===sess.id?sess:s); lsSet(SK,all) }
 function getWeight(n){ const d=lsGet(WK)||{}; return d[n]||null }
